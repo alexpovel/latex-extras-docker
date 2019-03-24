@@ -5,6 +5,12 @@ Next to the solution shown there, add `$pdf_mode = 4;` into `latexmkrc` to use `
 
 `bib2gls` requires Java.
 
+## Some thoughts
+
+  - `texlive-full` will prompt for Geographic Area usually. Employ `ENV DEBIAN_FRONTEND noninteractive` to suppress dialog creation, to which we are unable to respond in a Docker building process (which is why it fails). It is discouraged from in the [FAQ](https://docs.docker.com/engine/faq/).
+  - Went back from `FROM ubuntu:latest` to a specific version for long-term compatibility concerns.
+  - [Keep Layers at a low count](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/), therefore summarize into one/few `RUN` commands.
+
 Based on:
   - https://github.com/blang/latex-docker
   - https://github.com/aergus/dockerfiles
