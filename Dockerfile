@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM debian:testing
 MAINTAINER Alex Povel
 
 ENV DEBIAN_FRONTEND noninteractive
