@@ -1,6 +1,10 @@
-FROM ubuntu:latest
+FROM ubuntu:bionic
+MAINTAINER Alex Povel
 
-RUN apt-get -y update
-RUN apt-get -y install default-jre
-RUN apt-get -y install texlive-full
-RUN apt-get clean
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update -y \
+	&& apt-get install -y \
+		default-jre \
+		texlive-full \
+	&& rm -rf /var/lib/apt/lists/*
