@@ -4,3 +4,8 @@ Originally created to use `lualatex` in conjunction with `bib2gls` using `latexm
 Next to the solution shown there, add `$pdf_mode = 4;` into `latexmkrc` to use `lualatex` for all call of `latexmk`.
 
 `bib2gls` requires Java.
+
+Based on:
+  - https://github.com/blang/latex-docker
+  - https://github.com/aergus/dockerfiles
+  - https://github.com/Daxten/java-latex-docker
