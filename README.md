@@ -9,3 +9,4 @@ Based on:
   - https://github.com/blang/latex-docker
   - https://github.com/aergus/dockerfiles
   - https://github.com/Daxten/java-latex-docker
+  - https://gordonlesti.com/building-a-latex-docker-image/
