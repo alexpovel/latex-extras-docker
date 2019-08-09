@@ -1,9 +1,18 @@
-# Docker with full TeXLive distribution and Java
+# Docker with full TeXLive distribution with Java and InkScape
 
 Originally created to use `lualatex` in conjunction with `bib2gls` using `latexmk` as illustrated [here](https://tex.stackexchange.com/a/401979/120853).
 Next to the solution shown there, add `$pdf_mode = 4;` into `latexmkrc` to use `lualatex` for all calls of `latexmk`.
 
 `bib2gls` requires Java.
+
+## SVG graphics
+
+Including SVG files using (`lua`)`latex` is not very straightforward.
+Using the [`svg`](https://ctan.org/pkg/svg?lang=en) package, the workflow is somewhat automated.
+We keep just the original SVG files as the single source of truth, and leave the generation of the `pdf` and accompanying `pdf_tex` file to the package.
+It calls InkScape for converting the `svg` to `pdf` (or another format of choice), and if the `svg` contains text to be included as LaTeX, a sidecar `pdf_tex` file is generated (the default behaviour).
+To call InkScape, it requires outside access, aka `--shell-escape`.
+Once those files are generated, they can be treated as temporary junk and are always easily regenerated.
 
 ## Some thoughts
 
