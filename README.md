@@ -93,6 +93,7 @@ The alternative is to place macros (`\newcommand`) everywhere inside the origina
 These macros serve as labels, but are ugly, annoying, and remove the usability of the plain, original SVG file (since we would first need to know what each macro stands for).
 
 Using the `svg` package to generate plain, text-less PDFs and only later adding any text/annotation in the TeX source itself seems the best of both worlds.
+**It certainly allows both tools to do what they're good at, and no more**: draw free-flowing vectors graphics with InkScape, then add text in LaTeX (which can be done in `foreach` loops as well).
 
 ## Some thoughts
 
