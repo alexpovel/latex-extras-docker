@@ -8,3 +8,4 @@ RUN apt-get update -y \
 		default-jre \
 		texlive-full \
 		inkscape \
+		gnuplot \
