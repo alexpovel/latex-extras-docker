@@ -1,4 +1,4 @@
-# Docker image with a full TeXLive distribution (texlive-full), Java and InkScape
+# Docker image with a full TeXLive distribution (texlive-full), Java, gnuplot and InkScape
 
 [On Dockerhub.](https://cloud.docker.com/u/alexpovel/repository/docker/alexpovel/javalatex)
 
@@ -97,6 +97,7 @@ Using the `svg` package to generate plain, text-less PDFs and only later adding 
 
 ## Some thoughts
 
+  - `gnuplot` is currently used for `contour gnuplot` commands for `addplot3` in `pgfplots`.
   - [`texlive-full` will usually prompt for Geographic Area](https://stackoverflow.com/q/52108289). Employ `ENV DEBIAN_FRONTEND noninteractive` to suppress dialog creation, to which we are unable to respond in a Docker building process (which is why it fails). It is discouraged from in the [FAQ](https://docs.docker.com/engine/faq/).
   - Went back from `FROM ubuntu:latest` to a specific version for long-term compatibility concerns.
   - [Keep Layers at a low count](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/), therefore summarize into one/few `RUN` commands.
