@@ -1,4 +1,4 @@
-FROM debian:testing
+FROM debian:buster
 MAINTAINER Alex Povel
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -9,3 +9,7 @@ RUN apt-get update -y \
 		texlive-full \
 		inkscape \
 		gnuplot \
+		curl \
+		wget \
+		pandoc \
+		librsvg2-bin \
