@@ -95,6 +95,12 @@ These macros serve as labels, but are ugly, annoying, and remove the usability o
 Using the `svg` package to generate plain, text-less PDFs and only later adding any text/annotation in the TeX source itself seems the best of both worlds.
 **It certainly allows both tools to do what they're good at, and no more**: draw free-flowing vectors graphics with InkScape, then add text in LaTeX (which can be done in `foreach` loops as well).
 
+## Pandoc
+
+In order to also convert Markdown to PDF, install `pandoc`.
+Get `curl` and `wget` to install `pandoc` templates, like [Eisvogel](https://github.com/Wandmalfarbe/pandoc-latex-template).
+Lastly, use Debian's `librsvg2-bin` package to convert SVGs embedded inside the Markdown file (like GitLab Badges ![GitLab Badge](https://img.shields.io/badge/PDF-download-success.svg)), and use them in the PDF.
+
 ## Some thoughts
 
   - `gnuplot` is currently used for `contour gnuplot` commands for `addplot3` in `pgfplots`.
