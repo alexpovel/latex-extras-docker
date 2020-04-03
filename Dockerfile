@@ -1,5 +1,6 @@
 FROM debian:bullseye
-MAINTAINER Alex Povel
+
+LABEL maintainer="Alex Povel"
 
 ENV DEBIAN_FRONTEND noninteractive
 
