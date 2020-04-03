@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bullseye
 MAINTAINER Alex Povel
 
 ENV DEBIAN_FRONTEND noninteractive
