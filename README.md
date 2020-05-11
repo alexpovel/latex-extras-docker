@@ -1,8 +1,8 @@
 # Docker image with a full TeXLive distribution, Java, gnuplot, InkScape and others
 
 Serves a lot of needs surrounding LaTeX file generation.
-For an explanation on the rationale behind the used packages, see
-[this README](https://collaborating.tuhh.de/cap7863/gitlab-and-latex-ci-presentation/-/blob/master/README.md#docker).
+For the rationale behind the used packages, see
+[here](https://collaborating.tuhh.de/cap7863/latex-git-cookbook/-/blob/master/README.md#docker).
 
 [On Dockerhub.](https://cloud.docker.com/u/alexpovel/repository/docker/alexpovel/latex)
 
