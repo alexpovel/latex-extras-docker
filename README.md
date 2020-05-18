@@ -20,8 +20,7 @@ The auxiliary tools are:
 - `inkscape`
 - `pandoc` with the [Eisvogel template](https://github.com/Wandmalfarbe/pandoc-latex-template)
 
----
->>>>>>> 6827b89... Rework entire Dockerfile
+___
 
 [On Dockerhub.](https://cloud.docker.com/u/alexpovel/repository/docker/alexpovel/latex)
 
