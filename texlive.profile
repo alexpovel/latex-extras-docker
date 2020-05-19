@@ -5,8 +5,8 @@ selected_scheme scheme-custom
 
 # File has to have LF line endings to work with `install-tl` Perl script!
 
-# Directories copied from default, with '2020' replaced by 'current'; probably doesn't
-# matter, but 2020 will eventually be wrong.
+# Directories copied from default, with '2020' replaced by 'current'; probably
+# doesn't matter, but 2020 will eventually be wrong.
 TEXDIR /usr/local/texlive/current
 TEXMFCONFIG ~/.texlivecurrent/texmf-config
 TEXMFHOME ~/texmf
@@ -41,7 +41,11 @@ collection-pictures 1
 collection-plaingeneric 1
 collection-publishers 1
 collection-xetex 1
-# Enable the following disabled ones as needed
+# Enable the following disabled ones as needed. They are included here so
+# everyone can see what is available; as many as possible are disabled, since
+# image size matters. The default is aimed at theses in the technical domain.
+# Therefore, everything else is disabled. This includes various languages, so
+# activate your missing language here!
 collection-context 0
 collection-games 0
 collection-humanities 0
@@ -64,7 +68,6 @@ collection-music 0
 collection-pstricks 0
 collection-texworks 0
 collection-wintools 0
-collection-xetex 0
 # Options for TeXLive installation
 # Automatically adjust $PATH environment variable
 instopt_adjustpath 1
@@ -80,10 +83,11 @@ instopt_write18_restricted 1
 # https://tex.stackexchange.com/a/398831/120853
 tlpdbopt_autobackup 0
 tlpdbopt_backupdir tlpkg/backups
-# Create font format files, otherwise they have to be created on the fly each time.
+# Create font format files, otherwise they have to be created on the fly each
+# time.
 tlpdbopt_create_formats 1
-# None of the following is required; especially not documentation and source files,
-# which fill multiple GBs
+# None of the following is required; especially not documentation and source
+# files, which fill multiple GBs
 tlpdbopt_desktop_integration 0
 tlpdbopt_file_assocs 0
 tlpdbopt_generate_updmap 0
