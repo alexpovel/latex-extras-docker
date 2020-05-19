@@ -18,7 +18,10 @@ TEXMFVAR ~/.texlivecurrent/texmf-var
 binary_x86_64-linux 1
 # Collections of packages; for their contents, see
 # http://mirror.ctan.org/systems/texlive/tlnet/tlpkg/texlive.tlpdb
-# and search for 'name collection-<name>'
+# and search for 'name collection-<name>', e.g. 'name collection-basic'.
+# At the time of writing, the following encompasses all available collections.
+# Only the core ones with very few supported languages are enabled. For example,
+# just including 'collection-langjapanese' requires 800MB of space.
 collection-basic 1
 collection-bibtexextra 1
 collection-binextra 1
@@ -26,25 +29,42 @@ collection-fontsextra 1
 collection-fontsrecommended 1
 collection-fontutils 1
 collection-formatsextra 1
-collection-games 1
-collection-humanities 1
 collection-langenglish 1
 collection-langeuropean 1
-collection-langfrench 1
 collection-langgerman 1
-collection-langgreek 1
-collection-langspanish 1
 collection-latex 1
 collection-latexextra 1
 collection-latexrecommended 1
 collection-luatex 1
 collection-mathscience 1
-collection-metapost 1
 collection-pictures 1
 collection-plaingeneric 1
-collection-pstricks 1
 collection-publishers 1
 collection-xetex 1
+# Enable the following disabled ones as needed
+collection-context 0
+collection-games 0
+collection-humanities 0
+collection-langarabic 0
+collection-langchinese 0
+collection-langcjk 0
+collection-langcyrillic 0
+collection-langczechslovak 0
+collection-langfrench 0
+collection-langgreek 0
+collection-langitalian 0
+collection-langjapanese 0
+collection-langkorean 0
+collection-langother 0
+collection-langpolish 0
+collection-langportuguese 0
+collection-langspanish 0
+collection-metapost 0
+collection-music 0
+collection-pstricks 0
+collection-texworks 0
+collection-wintools 0
+collection-xetex 0
 # Options for TeXLive installation
 # Automatically adjust $PATH environment variable
 instopt_adjustpath 1
@@ -52,6 +72,7 @@ instopt_adjustpath 1
 instopt_adjustrepo 1
 # A4 default, not letter format
 instopt_letter 0
+# No portable installation required
 instopt_portable 0
 # Required for --shell-escape lualatex option
 instopt_write18_restricted 1
