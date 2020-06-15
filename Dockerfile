@@ -12,6 +12,7 @@ ADD http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz .
 # Copy custom file containing TeXLive installation instructions
 COPY texlive.profile .
 
+
 # Base texlive layer; large layer, so separate.
 # Use apt-get over apt, see https://askubuntu.com/a/990838/978477
 RUN apt-get update -y && \
@@ -33,7 +34,7 @@ RUN apt-get update -y && \
     luaotfload-tool --update
 
 
-#Layer with graphical and auxiliary tools
+# Layer with graphical and auxiliary tools
 RUN apt-get update && \
     apt-get install -y \
         # headless, 25% of normal size:
