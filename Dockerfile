@@ -8,6 +8,9 @@ WORKDIR /tmp/
 # Like COPY, but can fetch URLs; automatic archive unpacking no longer possible though.
 # URL gets latest TeXLive installer from close location.
 ADD http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz .
+# Get Eisvogel LaTeX template for pandoc,
+# see also #175 in that repo.
+ADD https://github.com/Wandmalfarbe/pandoc-latex-template/releases/latest/download/Eisvogel.tar.gz .
 
 # Copy custom file containing TeXLive installation instructions
 COPY texlive.profile .
@@ -47,21 +50,12 @@ RUN apt-get update && \
 # Pandoc layer; not required for LaTeX compilation, but useful for document conversions
 RUN apt-get update && \
     apt-get install -y \
-        curl \
         # librsvg2 for 'rsvg-convert' used by pandoc to convert SVGs when embedding
         # into PDF
         librsvg2-bin \
         pandoc && \
-    # Get URL to latest Eisvogel pandoc latex template release, then download archive.
-    # Suppress wget output (no file), instead write to stdout (-); avoids saving file,
-    # see https://unix.stackexchange.com/a/85195/374985
-    wget --quiet --output-document=- $(\
-        curl -s https://api.github.com/repos/Wandmalfarbe/pandoc-latex-template/releases/latest | \
-        grep "browser_download_url.*\.tar\.gz" | \
-        cut -d "\"" -f 4 \
-    ) | \
-    # pipe to tar, read from stdout from wget, extract only a single file
-    tar --extract --gzip --file=- eisvogel.tex && \
+    # Install Eisvogel template; extract only a single file
+    tar --extract --gzip --file=Eisvogel.tar.gz eisvogel.tex && \
     # Change that file's suffix to .latex, move to where pandoc looks for templates, see
     # https://pandoc.org/MANUAL.html#option--data-dir
     mv eisvogel.tex /usr/share/pandoc/data/templates/eisvogel.latex
