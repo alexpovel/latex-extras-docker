@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# See: https://docs.docker.com/docker-hub/builds/advanced/
+
+BASE_OS=debian
+OS_VERSION=10
+VCS_REF=$(git rev-parse --short HEAD)
+BUILD_DATE=$(date -u +”%Y-%m-%dT%H:%M:%SZ”)
+
+docker build \
+    --build-arg BASE_OS=${BASE_OS} \
+    --build-arg OS_VERSION=${OS_VERSION} \
+    --build-arg VCS_REF=${VCS_REF} \
+    --build-arg BUILD_DATE=${BUILD_DATE} \
+    --tag $DOCKER_REPO:$OS_VERSION .
