@@ -2,14 +2,37 @@
 
 # See: https://docs.docker.com/docker-hub/builds/advanced/
 
-BASE_OS=debian
-OS_VERSION=10
-VCS_REF=$(git rev-parse --short HEAD)
+VCS_REF=$SOURCE_COMMIT
 BUILD_DATE=$(date -u +”%Y-%m-%dT%H:%M:%SZ”)
 
+# E.g. 'debian'
+BASE_OS=$(echo $DOCKER_TAG | cut -d "-" -f1)
+
+if [[ $DOCKER_TAG == "latest" ]]
+then
+    # Just get latest base OS version:
+    OS_VERSION="latest"
+    # Installation script takes care of finding the appropriate version of TeXLive
+    # for the 'latest' tag:
+    TL_VERSION="latest"
+else
+    # Otherwise, take versions as manually specified in build process.
+    #
+    # This assumes tags in the form: '<baseos>-<version>-texlive-<version>'
+    #
+    # E.g. '10' for Debian, but can also be 'buster', see:
+    # https://wiki.debian.org/DebianReleases
+    # These are the available versions:
+    # https://hub.docker.com/_/debian?tab=tags
+    OS_VERSION=$(echo $DOCKER_TAG | cut -d "-" -f2)
+    # E.g. '2020':
+    TL_VERSION=$(echo $DOCKER_TAG | cut -d "-" -f4)
+fi
+
 docker build \
-    --build-arg BASE_OS=${BASE_OS} \
-    --build-arg OS_VERSION=${OS_VERSION} \
     --build-arg VCS_REF=${VCS_REF} \
     --build-arg BUILD_DATE=${BUILD_DATE} \
-    --tag $DOCKER_REPO:$OS_VERSION .
+    --build-arg BASE_OS=${BASE_OS} \
+    --build-arg OS_VERSION=${OS_VERSION} \
+    --build-arg TL_VERSION=${TL_VERSION} \
+    --tag ${IMAGE_NAME} .

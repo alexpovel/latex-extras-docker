@@ -2,7 +2,38 @@
 ARG BASE_OS
 ARG OS_VERSION
 
-FROM ${BASE_OS}:${OS_VERSION} as PREPARE
+# Image with layers as used by all succeeding steps
+FROM ${BASE_OS}:${OS_VERSION} as BASE
+
+# Use `apt-get` over just `apt`, see https://askubuntu.com/a/990838/978477.
+# Also run `apt-get update` on every `RUN`, see:
+# https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
+RUN apt-get update && \
+    apt-get install --yes --no-install-recommends \
+        # wget for `install-tl` script to download TeXLive, and other downloads.
+        wget \
+        # wget/install-tl requires capibility to check certificate validity.
+        # Without this, executing `install-tl` fails with:
+        #
+        # install-tl: TLPDB::from_file could not initialize from: https://<mirror>/pub/ctan/systems/texlive/tlnet/tlpkg/texlive.tlpdb
+        # install-tl: Maybe the repository setting should be changed.
+        # install-tl: More info: https://tug.org/texlive/acquire.html
+        #
+        # Using `install-tl -v`, found out that mirrors use HTTPS, for which the
+        # underlying `wget` (as used by `install-tl`) returns:
+        #
+        # ERROR: The certificate of '<mirror>' is not trusted.
+        # ERROR: The certificate of '<mirror>' doesn't have a known issuer.
+        #
+        # This is resolved by installing:
+        ca-certificates \
+        # Update Perl, otherwise: "Can't locate Pod/Usage.pm in @INC" in install-tl
+        # script; Perl is already installed, but do not use `upgrade`, see
+        # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
+        perl
+
+
+FROM BASE as PREPARE
 
 # Cannot share ARGs over multiple stages, see also:
 # https://github.com/moby/moby/issues/37345.
@@ -24,17 +55,19 @@ FROM ${BASE_OS}:${OS_VERSION} as PREPARE
 # This also happens when the *value* contains 'TEX'.
 # `ARG`s are only set during Docker image build-time, so this warning should be void.
 
+ARG TL_VERSION
 ARG TL_ARCHIVE="install-tl-unx.tar.gz"
 ARG EISVOGEL_ARCHIVE="Eisvogel.tar.gz"
 ARG INSTALL_TL_DIR="install-tl"
 
-# Like COPY, but can fetch URLs; automatic archive unpacking no longer possible though.
-# URL gets latest TeXLive installer from close location.
-ADD http://mirror.ctan.org/systems/texlive/tlnet/${TL_ARCHIVE} .
-# Get Eisvogel LaTeX template for pandoc,
-# see also #175 in that repo.
-ADD https://github.com/Wandmalfarbe/pandoc-latex-template/releases/latest/download/${EISVOGEL_ARCHIVE} .
+COPY texlive.sh .
 
+RUN \
+    # Get appropriate installer for the TeXLive version to be installed:
+    ./texlive.sh get ${TL_VERSION} && \
+    # Get Eisvogel LaTeX template for pandoc,
+    # see also #175 in that repo.
+    wget https://github.com/Wandmalfarbe/pandoc-latex-template/releases/latest/download/${EISVOGEL_ARCHIVE}
 
 RUN \
     mkdir ${INSTALL_TL_DIR} && \
@@ -48,12 +81,13 @@ RUN \
     tar --extract --file=${EISVOGEL_ARCHIVE}
 
 
-FROM ${BASE_OS}:${OS_VERSION} as MAIN
+FROM BASE as MAIN
 
-# Metdata
-ARG BUILD_DATE
-ARG VCS_REF
+# Metadata
+ARG BUILD_DATE="n/a"
+ARG VCS_REF="n/a"
 
+ARG TL_VERSION
 ARG TL_PROFILE="texlive.profile"
 
 # Label according to http://label-schema.org/rc1/ to have some metadata in the image.
@@ -74,45 +108,15 @@ WORKDIR ${INSTALL_DIR}
 
 # Copy custom file containing TeXLive installation instructions
 COPY ${TL_PROFILE} .
-
-COPY --from=PREPARE /install-tl/ .
+COPY --from=PREPARE /install-tl/ /texlive.sh .
 
 # Change that file's suffix to .latex, move to where pandoc looks for templates, see
 # https://pandoc.org/MANUAL.html#option--data-dir
 COPY --from=PREPARE /eisvogel.tex /usr/share/pandoc/data/templates/eisvogel.latex
 
-# Layer of basic tools, should not change often
-# Use `apt-get` over just `apt`, see https://askubuntu.com/a/990838/978477.
-# Also run `apt-get update` on every `RUN`, see:
-# https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
-RUN apt-get update && \
-    apt-get install --yes --no-install-recommends \
-    # Update Perl, otherwise: "Can't locate Pod/Usage.pm in @INC" in install-tl
-    # script; Perl is already installed, but do not use `upgrade`, see
-    # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
-    perl \
-    # wget for install-tl script to download TeXLive
-    wget \
-    # wget/install-tl requires capibility to check certificate validity.
-    # Without this, executing `install-tl` fails with:
-    #
-    # install-tl: TLPDB::from_file could not initialize from: https://<mirror>/pub/ctan/systems/texlive/tlnet/tlpkg/texlive.tlpdb
-    # install-tl: Maybe the repository setting should be changed.
-    # install-tl: More info: https://tug.org/texlive/acquire.html
-    #
-    # Using `install-tl -v`, found out that mirrors use HTTPS, for which the
-    # underlying `wget` (as used by `install-tl`) returns:
-    #
-    # ERROR: The certificate of '<mirror>' is not trusted.
-    # ERROR: The certificate of '<mirror>' doesn't have a known issuer.
-    #
-    # This is resolved by installing:
-    ca-certificates
-
 # (Large) LaTeX layer
 RUN \
-    # Use custom profile for unattended install
-    ./install-tl --profile=${TL_PROFILE} && \
+    ./texlive.sh install ${TL_VERSION}
     # Load font cache, has to be done on each compilation otherwise
     # (luaotfload | db : Font names database not found, generating new one.)
     luaotfload-tool --update
