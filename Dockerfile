@@ -108,7 +108,7 @@ WORKDIR ${INSTALL_DIR}
 
 # Copy custom file containing TeXLive installation instructions
 COPY ${TL_PROFILE} .
-COPY --from=PREPARE /install-tl/ /texlive.sh .
+COPY --from=PREPARE /install-tl/ /texlive.sh ./
 
 # Change that file's suffix to .latex, move to where pandoc looks for templates, see
 # https://pandoc.org/MANUAL.html#option--data-dir
@@ -116,7 +116,7 @@ COPY --from=PREPARE /eisvogel.tex /usr/share/pandoc/data/templates/eisvogel.late
 
 # (Large) LaTeX layer
 RUN \
-    ./texlive.sh install ${TL_VERSION}
+    ./texlive.sh install ${TL_VERSION} && \
     # Load font cache, has to be done on each compilation otherwise
     # (luaotfload | db : Font names database not found, generating new one.)
     luaotfload-tool --update
