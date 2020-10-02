@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# See: https://docs.docker.com/docker-hub/builds/advanced/
+# For more info, see:
+# https://docs.docker.com/docker-hub/builds/advanced/
+# https://web.archive.org/web/20201002130055/https://dev.to/samuelea/automate-your-builds-on-docker-hub-by-writing-a-build-hook-script-13fp
 
 VCS_REF=$SOURCE_COMMIT
 BUILD_DATE=$(date -u +”%Y-%m-%dT%H:%M:%SZ”)
