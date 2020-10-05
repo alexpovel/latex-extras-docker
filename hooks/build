@@ -19,7 +19,8 @@ then
 else
     # Otherwise, take versions as manually specified in build process.
     #
-    # This assumes tags in the form: '<baseos>-<version>-texlive-<version>'
+    # This assumes tags in the form: '<baseos>-<version>-texlive-<version>',
+    # e.g. 'debian-10-texlive-2019'
     #
     # E.g. 'debian'
     BASE_OS=$(echo $DOCKER_TAG | cut -d "-" -f1)
