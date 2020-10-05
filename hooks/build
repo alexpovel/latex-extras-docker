@@ -5,7 +5,7 @@
 # https://web.archive.org/web/20201002130055/https://dev.to/samuelea/automate-your-builds-on-docker-hub-by-writing-a-build-hook-script-13fp
 
 VCS_REF=$SOURCE_COMMIT
-BUILD_DATE=$(date -u +”%Y-%m-%dT%H:%M:%SZ”)
+BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%S%Z)
 
 if [[ $DOCKER_TAG == "latest" ]]
 then
