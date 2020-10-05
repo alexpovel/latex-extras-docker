@@ -20,18 +20,22 @@ fi
 ACTION=${1}
 VERSION=${2}
 
-HISTORIC_BASE_URL="ftp://tug.org/historic/systems/texlive"
-REGULAR_BASE_URL="http://mirror.ctan.org/systems/texlive/tlnet"
+# Download the `install-tl` script from the `tlnet-final` subdirectory, NOT
+# from the parent directory. The latter contains an outdated, non-final `install-tl`
+# script, causing this exact problem:
+# https://tug.org/pipermail/tex-live/2017-June/040376.html
+HISTORIC_URL="ftp://tug.org/historic/systems/texlive/${VERSION}/tlnet-final"
+REGULAR_URL="http://mirror.ctan.org/systems/texlive/tlnet"
 
 case ${ACTION} in
     "get")
         if [[ ${VERSION} == "latest" ]]
         then
             # Get from default, current repository
-            wget ${REGULAR_BASE_URL}/${TL_ARCHIVE}
+            wget ${REGULAR_URL}/${TL_INSTALL_ARCHIVE}
         else
             # Get from historic repository
-            wget ${HISTORIC_BASE_URL}/${VERSION}/${TL_ARCHIVE}
+            wget ${HISTORIC_URL}/${TL_INSTALL_ARCHIVE}
         fi
     ;;
     "install")
@@ -45,7 +49,7 @@ case ${ACTION} in
             # versions need to match)
             ./install-tl \
                 --profile=${TL_PROFILE} \
-                --repository=${HISTORIC_BASE_URL}/${VERSION}/tlnet-final
+                --repository=${HISTORIC_URL}
         fi
     ;;
     *)

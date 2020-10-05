@@ -56,7 +56,7 @@ FROM BASE as PREPARE
 # `ARG`s are only set during Docker image build-time, so this warning should be void.
 
 ARG TL_VERSION
-ARG TL_ARCHIVE="install-tl-unx.tar.gz"
+ARG TL_INSTALL_ARCHIVE="install-tl-unx.tar.gz"
 ARG EISVOGEL_ARCHIVE="Eisvogel.tar.gz"
 ARG INSTALL_TL_DIR="install-tl"
 
@@ -75,7 +75,7 @@ RUN \
     # https://unix.stackexchange.com/a/11019/374985.
     # The archive comes with a name in the form of 'install-tl-YYYYMMDD' from the source,
     # which is of course unpredictable.
-    tar --extract --file=${TL_ARCHIVE} --directory=${INSTALL_TL_DIR} --strip-components 1 && \
+    tar --extract --file=${TL_INSTALL_ARCHIVE} --directory=${INSTALL_TL_DIR} --strip-components 1 && \
     \
     # Prepare Eisvogel pandoc template (yields `eisvogel.tex` among other things):
     tar --extract --file=${EISVOGEL_ARCHIVE}
