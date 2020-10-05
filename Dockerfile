@@ -142,7 +142,7 @@ RUN apt-get update && \
 WORKDIR /tex/
 
 # Remove no longer needed installation workdir.
-# Cannot run this earlier because it would be recreated for any succeeding `RUN` 
+# Cannot run this earlier because it would be recreated for any succeeding `RUN`
 # instructions.
 # Therefore, change `WORKDIR` first, then delete the old one.
 RUN rm --recursive ${INSTALL_DIR}
