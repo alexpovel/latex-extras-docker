@@ -12,10 +12,10 @@ then
     # Default OS:
     BASE_OS="debian"
     # Just get latest base OS version:
-    OS_VERSION="latest"
+    OS_VERSION=${DOCKER_TAG}
     # Installation script takes care of finding the appropriate version of TeXLive
     # for the 'latest' tag:
-    TL_VERSION="latest"
+    TL_VERSION=${DOCKER_TAG}
 else
     # Otherwise, take versions as manually specified in build process.
     #
