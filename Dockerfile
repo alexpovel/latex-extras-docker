@@ -129,7 +129,9 @@ RUN apt-get update && \
     # No headless inkscape available currently:
     inkscape \
     # nox (no X Window System): CLI version, 10% of normal size:
-    gnuplot-nox
+    gnuplot-nox \
+    # For various conversion tasks, e.g. EPS -> PDF (for legacy support):
+    ghostscript
 
 # Pandoc layer; not required for LaTeX compilation, but useful for document conversions
 RUN apt-get update && \
