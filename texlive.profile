@@ -80,7 +80,10 @@ collection-wintools 0
 # -------------------------------------------------------------------------------
 # Options for TeXLive installation
 # -------------------------------------------------------------------------------
-# Automatically adjust $PATH environment variable; required to find tools.
+# Create symlinks in standard $PATH directories (TeXLive installs into `TEXDIR`,
+# see its path above). Instead of manipulating $PATH, symlinks to `TEXDIR` are
+# created, per default into `/usr/local/bin`.
+# This setting is required to find tools!
 instopt_adjustpath 1
 # Do not adjust remote CTAN repository; keep the one manually specified.
 # Shouldn't matter since the repository is not used after installation/image build.
