@@ -42,12 +42,12 @@ case ${ACTION} in
         if [[ ${VERSION} == "latest" ]]
         then
             # Install using default, current repository
-            ./install-tl \
+            perl install-tl \
                 --profile=${TL_PROFILE}
         else
             # Install using historic repository (`install-tl` script and repository
             # versions need to match)
-            ./install-tl \
+            perl install-tl \
                 --profile=${TL_PROFILE} \
                 --repository=${HISTORIC_URL}
         fi
