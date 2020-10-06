@@ -167,4 +167,12 @@ WORKDIR /tex/
 # Therefore, change `WORKDIR` first, then delete the old one.
 RUN rm --recursive ${INSTALL_DIR}
 
-CMD [ "latexmk" ]
+# The default parameters to the entrypoint; overridden if any arguments are given to
+# `docker run`.
+# `lualatex` usage for `latexmk` implies PDF generation, otherwise DVI is generated.
+CMD [ "--lualatex" ]
+
+# Allow container to run as an executable; override with `--entrypoint`.
+# Allows to simply `run` the image without specifying any executable.
+# If `latexmk` is called without a file argument, it will run on all *.tex files found.
+ENTRYPOINT [ "latexmk" ]
