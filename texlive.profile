@@ -10,16 +10,19 @@
 selected_scheme scheme-custom
 
 # -------------------------------------------------------------------------------
-# Directories copied from default, with '2020' replaced by 'current'; probably
-# doesn't matter, but 2020 will eventually be wrong.
+# The below directories are the installation destinations.
+# For scripting/convenience, they are set using environment variables in the
+# Dockerfile, NOT here.
 # -------------------------------------------------------------------------------
-TEXDIR /usr/local/texlive/current
-TEXMFCONFIG ~/.texlivecurrent/texmf-config
-TEXMFHOME ~/texmf
-TEXMFLOCAL /usr/local/texlive/texmf-local
-TEXMFSYSCONFIG /usr/local/texlive/current/texmf-config
-TEXMFSYSVAR /usr/local/texlive/current/texmf-var
-TEXMFVAR ~/.texlivecurrent/texmf-var
+# TEXDIR /usr/local/texlive/<version>
+# TEXMFSYSCONFIG /usr/local/texlive/<version>/texmf-config
+# TEXMFSYSVAR /usr/local/texlive/<version>/texmf-var
+#
+# TEXMFHOME ~/texmf
+# TEXMFLOCAL /usr/local/texlive/texmf-local
+#
+# TEXMFVAR ~/.texlive<version>/texmf-var
+# TEXMFCONFIG ~/.texlive<version>/texmf-config
 #
 # -------------------------------------------------------------------------------
 # Collections of packages; for their contents, see
@@ -84,7 +87,13 @@ collection-wintools 0
 # see its path above). Instead of manipulating $PATH, symlinks to `TEXDIR` are
 # created, per default into `/usr/local/bin`.
 # This setting is required to find tools!
-instopt_adjustpath 1
+# WARNING: This seems to only have been introduced in TeXLive 2017, see:
+# https://web.archive.org/web/20171213102459/http://www.tug.org/texlive/doc/install-tl.html
+# (archives from 2016 and earlier do not mention `adjustpath` on that page).
+#
+# THEREFORE, turn feature off and set path manually (which works for both old and recent
+# releases) in the Dockerfile.
+instopt_adjustpath 0
 # Do not adjust remote CTAN repository; keep the one manually specified.
 # Shouldn't matter since the repository is not used after installation/image build.
 instopt_adjustrepo 0
@@ -115,7 +124,8 @@ tlpdbopt_install_srcfiles 0
 #
 # Execute postinstallation code for packages:
 tlpdbopt_post_code 1
-# Symlink destinations (binaries, documentation, manuals):
-tlpdbopt_sys_bin /usr/local/bin
-tlpdbopt_sys_info /usr/local/share/info
-tlpdbopt_sys_man /usr/local/share/man
+# Symlink destinations (binaries, documentation, manuals).
+# Since symlinking is done manually in the Dockerfile, these are not needed.
+# tlpdbopt_sys_bin /usr/local/bin
+# tlpdbopt_sys_info /usr/local/share/info
+# tlpdbopt_sys_man /usr/local/share/man

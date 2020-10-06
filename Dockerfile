@@ -114,12 +114,30 @@ COPY --from=PREPARE /install-tl/ /texlive.sh ./
 # https://pandoc.org/MANUAL.html#option--data-dir
 COPY --from=PREPARE /eisvogel.tex /usr/share/pandoc/data/templates/eisvogel.latex
 
+# See: https://www.tug.org/texlive/doc/install-tl.html#ENVIRONMENT-VARIABLES
+ARG TEXLIVE_INSTALL_PREFIX="/usr/local/texlive"
+ARG TEXLIVE_INSTALL_TEXDIR="${TEXLIVE_INSTALL_PREFIX}/${TL_VERSION}"
+ARG TEXLIVE_INSTALL_TEXMFCONFIG="~/.texlive${TL_VERSION}/texmf-config"
+ARG TEXLIVE_INSTALL_TEXMFVAR="~/.texlive${TL_VERSION}/texmf-var"
+ARG TEXLIVE_INSTALL_TEXMFHOME="~/texmf"
+ARG TEXLIVE_INSTALL_TEXMFLOCAL="${TEXLIVE_INSTALL_PREFIX}/texmf-local"
+ARG TEXLIVE_INSTALL_TEXMFSYSCONFIG="${TEXLIVE_INSTALL_TEXDIR}/texmf-config"
+ARG TEXLIVE_INSTALL_TEXMFSYSVAR="${TEXLIVE_INSTALL_TEXDIR}/texmf-var"
+
 # (Large) LaTeX layer
 RUN \
     ./texlive.sh install ${TL_VERSION} && \
+    # Make installation available on path manually.
+    # Remove existing destination files (could be created by TeXLive installation
+    # process).
+    # The first wildcard expands to the architecture (should be 'x86_64-linux'),
+    # the second one expands to all binaries found in that directory.
+    ln --force --symbolic ${TEXLIVE_INSTALL_TEXDIR}/bin/*/* /usr/local/bin && \
     # Load font cache, has to be done on each compilation otherwise
-    # (luaotfload | db : Font names database not found, generating new one.)
-    luaotfload-tool --update
+    # ("luaotfload | db : Font names database not found, generating new one.")
+    # If not found, e.g. TeXLive 2012 and earlier, simply skip it. Will return exit code
+    # 0 and allow the build to continue.
+    luaotfload-tool --update || echo "luaotfload-tool not found, skipping."
 
 # Layer with graphical and auxiliary tools
 RUN apt-get update && \
