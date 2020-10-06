@@ -132,12 +132,13 @@ RUN \
     # process).
     # The first wildcard expands to the architecture (should be 'x86_64-linux'),
     # the second one expands to all binaries found in that directory.
-    ln --force --symbolic ${TEXLIVE_INSTALL_TEXDIR}/bin/*/* /usr/local/bin && \
-    # Load font cache, has to be done on each compilation otherwise
-    # ("luaotfload | db : Font names database not found, generating new one.")
-    # If not found, e.g. TeXLive 2012 and earlier, simply skip it. Will return exit code
-    # 0 and allow the build to continue.
-    luaotfload-tool --update || echo "luaotfload-tool not found, skipping."
+    ln --force --symbolic ${TEXLIVE_INSTALL_TEXDIR}/bin/*/* /usr/local/bin
+
+# Load font cache, has to be done on each compilation otherwise
+# ("luaotfload | db : Font names database not found, generating new one.").
+# If not found, e.g. TeXLive 2012 and earlier, simply skip it. Will return exit code
+# 0 and allow the build to continue.
+RUN luaotfload-tool --update || echo "luaotfload-tool not found, skipping."
 
 # Layer with graphical and auxiliary tools
 RUN apt-get update && \
