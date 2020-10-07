@@ -1,11 +1,15 @@
 #!/bin/bash
 
+set -u
+
 # For more info, see:
 # https://docs.docker.com/docker-hub/builds/advanced/
 # https://web.archive.org/web/20201002130055/https://dev.to/samuelea/automate-your-builds-on-docker-hub-by-writing-a-build-hook-script-13fp
 
 VCS_REF=$SOURCE_COMMIT
 BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%S%Z)
+
+cut_tag_field() { echo ${DOCKER_TAG} | cut --delimiter="-" --fields=${1}; }
 
 if [[ $DOCKER_TAG == "latest" ]]
 then
@@ -23,14 +27,14 @@ else
     # e.g. 'debian-10-texlive-2019'
     #
     # E.g. 'debian'
-    BASE_OS=$(echo $DOCKER_TAG | cut -d "-" -f1)
+    BASE_OS=$(cut_tag_field 1)
     # Version e.g. '10' for Debian, but can also be 'buster', see:
     # https://wiki.debian.org/DebianReleases
     # These are the available versions:
     # https://hub.docker.com/_/debian?tab=tags
-    OS_VERSION=$(echo $DOCKER_TAG | cut -d "-" -f2)
+    OS_VERSION=$(cut_tag_field 2)
     # E.g. '2020':
-    TL_VERSION=$(echo $DOCKER_TAG | cut -d "-" -f4)
+    TL_VERSION=$(cut_tag_field 4)
 fi
 
 docker build \
