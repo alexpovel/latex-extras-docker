@@ -11,11 +11,14 @@ usage() {
 }
 
 if [[ $# != 2 ]]; then
-    echo "Unsuitable number of arguments given."
+    echoerr "Unsuitable number of arguments given."
     usage
     # From /usr/include/sysexits.h
     exit 64
 fi
+
+# From: https://stackoverflow.com/a/2990533/11477374
+echoerr() { echo "$@" 1>&2; }
 
 # Bind CLI arguments to explicit names:
 ACTION=${1}
@@ -52,33 +55,59 @@ case ${ACTION} in
                 --profile=${TL_PROFILE} \
                 --repository=${HISTORIC_URL}
         fi
-        # Make installation available on path manually.
-        # Overwrite existing destination files (could have beeen created by TeXLive
-        # installation process).
-        # The first wildcard expands to the architecture (should be 'x86_64-linux'),
-        # the second one expands to all binaries found in that directory.
-        # Only link if directory exists, else we end up with a junk symlink.
-        if [[ -d ${TEXLIVE_INSTALL_TEXDIR}/bin/*/ ]]
-        then
-            echo "Symlinking TeXLive binaries to a directory found on PATH..."
-            ln --force --symbolic ${TEXLIVE_INSTALL_TEXDIR}/bin/*/* /usr/local/bin
-        else
-            echo "Expected TeXLive installation dir not found."
-            echo "Relying on TeXLive installation procedure to have modified PATH on its own,"
-            echo "e.g. trough the 'instopt_adjustpath 1' option."
-        fi
 
-        # This is not an exhaustive test, just a quick check. Therefore, a negative
-        # result does not `exit` with non-zero.
+        # For `command` usage, see:
+        # https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#Bash-Builtins.
+        # The following test assumes the most basic program, `tex`, is present.
         if command -v tex &> /dev/null
         then
+            # If automatic `install-tl` process has already adjusted PATH, we are happy.
             echo "PATH and installation seem OK."
         else
-            echo "PATH or installation seem broken."
+            # Try and make installation available on path manually.
+            #
+            # The first wildcard expands to the architecture (should be 'x86_64-linux',
+            # which might change in TeXLive upstream, so do not hardcode here),
+            # the second one expands to all binaries found in that directory.
+            # Only link if directory exists, else we end up with a junk symlink.
+            EXPECTED_INSTALL_TEXDIR=${TEXLIVE_INSTALL_TEXDIR}/bin/*
+
+            # `ls` found to be more robust than `[ -d ... ]`.
+            if ls ${EXPECTED_INSTALL_TEXDIR} 1>/dev/null 2>&1
+            then
+                SYMLINK_DESTINATION="/usr/local/bin"
+
+                # "String contains", see: https://stackoverflow.com/a/229606/11477374
+                if [[ ! ${PATH} == *${SYMLINK_DESTINATION}* ]]
+                then
+                    # Should never get here, but make sure.
+                    echoerr "Symlink destination ${SYMLINK_DESTINATION} not in PATH (${PATH}), exiting."
+                    exit 1
+                fi
+
+                echo "Symlinking TeXLive binaries in ${EXPECTED_INSTALL_TEXDIR}"
+                echo "to a directory (${SYMLINK_DESTINATION}) found on PATH (${PATH})"
+
+                # Notice the wildcard:
+                ln --symbolic --verbose ${EXPECTED_INSTALL_TEXDIR}/* ${SYMLINK_DESTINATION}
+
+                if command -v tex &> /dev/null
+                then
+                    echo "PATH and installation seem OK."
+                else
+                    echoerr "Manual symlinking failed and TeXLive did not modify PATH automatically."
+                    echoerr "Exiting."
+                    exit 1
+                fi
+            else
+                echoerr "Expected TeXLive installation dir not found and TeXLive installation did not modify PATH automatically."
+                echoerr "Exiting."
+                exit 1
+            fi
         fi
     ;;
     *)
-        echo "Input not understood."
+        echoerr "Input not understood."
         usage
         # From /usr/include/sysexits.h
         exit 64
