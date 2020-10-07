@@ -314,6 +314,9 @@ Essentially, you would want to emulate what the [build hook](hooks/build) does.
 This process can take a very long time, especially when downloading from the TeXLive/TUG
 archives.
 For developing/debugging, it is advisable to download the archive files once
-(e.g. for TexLive 2014, you would want [this directory](ftp://tug.org/historic/systems/texlive/2014/tlnet-final/))
+(e.g. for TexLive 2014, you would want this directory: <ftp://tug.org/historic/systems/texlive/2014/tlnet-final/>)
 and then working with the `--repository=/some/local/path` option of `install-tl`,
-after copying the archive directory into the image at build time.
+after copying the archive directory into the image at build time
+(see also [here](https://tex.stackexchange.com/a/374651/120853)).
+This approach circumvents [unstable connections](https://tex.stackexchange.com/q/370686/120853)
+and minimizes unnecessary load put onto TUG servers.
