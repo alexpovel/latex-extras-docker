@@ -17,6 +17,7 @@ if [[ $# != 2 ]]; then
     exit 64
 fi
 
+# Bind CLI arguments to explicit names:
 ACTION=${1}
 VERSION=${2}
 
