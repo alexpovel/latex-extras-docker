@@ -51,6 +51,30 @@ case ${ACTION} in
                 --profile=${TL_PROFILE} \
                 --repository=${HISTORIC_URL}
         fi
+        # Make installation available on path manually.
+        # Overwrite existing destination files (could have beeen created by TeXLive
+        # installation process).
+        # The first wildcard expands to the architecture (should be 'x86_64-linux'),
+        # the second one expands to all binaries found in that directory.
+        # Only link if directory exists, else we end up with a junk symlink.
+        if [[ -d ${TEXLIVE_INSTALL_TEXDIR}/bin/*/ ]]
+        then
+            echo "Symlinking TeXLive binaries to a directory found on PATH..."
+            ln --force --symbolic ${TEXLIVE_INSTALL_TEXDIR}/bin/*/* /usr/local/bin
+        else
+            echo "Expected TeXLive installation dir not found."
+            echo "Relying on TeXLive installation procedure to have modified PATH on its own,"
+            echo "e.g. trough the 'instopt_adjustpath 1' option."
+        fi
+
+        # This is not an exhaustive test, just a quick check. Therefore, a negative
+        # result does not `exit` with non-zero.
+        if command -v tex &> /dev/null
+        then
+            echo "PATH and installation seem OK."
+        else
+            echo "PATH or installation seem broken."
+        fi
     ;;
     *)
         echo "Input not understood."

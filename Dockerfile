@@ -125,14 +125,7 @@ ARG TEXLIVE_INSTALL_TEXMFSYSCONFIG="${TEXLIVE_INSTALL_TEXDIR}/texmf-config"
 ARG TEXLIVE_INSTALL_TEXMFSYSVAR="${TEXLIVE_INSTALL_TEXDIR}/texmf-var"
 
 # (Large) LaTeX layer
-RUN \
-    ./texlive.sh install ${TL_VERSION} && \
-    # Make installation available on path manually.
-    # Remove existing destination files (could be created by TeXLive installation
-    # process).
-    # The first wildcard expands to the architecture (should be 'x86_64-linux'),
-    # the second one expands to all binaries found in that directory.
-    ln --force --symbolic ${TEXLIVE_INSTALL_TEXDIR}/bin/*/* /usr/local/bin
+RUN ./texlive.sh install ${TL_VERSION}
 
 # Load font cache, has to be done on each compilation otherwise
 # ("luaotfload | db : Font names database not found, generating new one.").
