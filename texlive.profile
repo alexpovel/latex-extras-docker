@@ -91,9 +91,10 @@ collection-wintools 0
 # https://web.archive.org/web/20171213102459/http://www.tug.org/texlive/doc/install-tl.html
 # (archives from 2016 and earlier do not mention `adjustpath` on that page).
 #
-# THEREFORE, turn feature off and set path manually (which works for both old and recent
-# releases) in the Dockerfile.
-instopt_adjustpath 0
+# At the same time, TeXLive 2020 does not seem to respect the set `TEXDIR`, breaking
+# installation. However, adjusting the path here automatically works.
+# Since older installations will simply ignore this setting, enable it for safety.
+instopt_adjustpath 1
 # Do not adjust remote CTAN repository; keep the one manually specified.
 # Shouldn't matter since the repository is not used after installation/image build.
 instopt_adjustrepo 0
