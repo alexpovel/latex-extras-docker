@@ -26,17 +26,53 @@ To use the image, you can use the [example](tests/minimal.tex) provided in this 
     alexpovel/latex
   ```
 
-The last line is the location on [DockerHub](https://hub.docker.com/repository/docker/alexpovel/latex).
-Without specifying a [*tag*](https://hub.docker.com/repository/docker/alexpovel/latex/tags?page=1),
-the default `latest` is implied.
-See [below](#historic-builds) for more options.
+The parts making up the command are:
 
-The option `--rm` removes the container after a successful run.
-Providing a `--volume`, in this case [`tests/`](./tests/) in the current working directory,
-is required for the container to find files to work on.
-It has to be *mounted* to a location *inside* the container.
-This has to be whatever the last `WORKDIR` instruction in the [Dockerfile](Dockerfile) is,
-e.g. `/tex`.
+- The last line is the location on [DockerHub](https://hub.docker.com/repository/docker/alexpovel/latex).
+  Without specifying a [*tag*](https://hub.docker.com/repository/docker/alexpovel/latex/tags?page=1),
+  the default `latest` is implied.
+  See [below](#historic-builds) for more options.
+- The `--rm` option removes the container after a successful run.
+  This is generally desired since containers are not supposed to be stateful:
+  once their process terminates, the container terminates, and it can be considered junk.
+- Providing a `--volume`, in this case [`tests/`](./tests/) in the current working directory,
+  is required for the container to find files to work on.
+  It has to be *mounted* to a location *inside* the container.
+  This has to be whatever the last `WORKDIR` instruction in the [Dockerfile](Dockerfile) is,
+  e.g. `/tex`.
+
+  Otherwise, you can always override the `WORKDIR` using the `--workdir` option.
+  This is the directory in which the Docker container's process works in and expects to
+  find files.
+- Note that there is no command given, e.g. there is nothing *after* `alexpovel/latex`.
+  In this form, the container runs as an executable (just as if you ran `lualatex` or
+  similar commands), where the program to be executed is determined by the `ENTRYPOINT`
+  instruction in the [Dockerfile](Dockerfile).
+
+  For example, if the `ENTRYPOINT` is set to `latexmk`, running the above command will
+  execute `latexmk` in the container's context, without you having to specify it.
+
+  (`latexmk` is a recipe-like tool that automates LaTeX document compilation by running
+  `lualatex`, `biber` and whatever else required for compilation as many times as
+  needed for proper PDF output (so references like `??` in the PDF are resolved).
+  It does this by detecting that auxiliary files no longer change (steady-state).
+  The tool is best configured using a config file (`.latexmkrc`).)
+
+  Any options to the `ENTRYPOINT` executable are given at the end of the command, e.g.:
+
+  ```bash
+  docker run \
+    --rm \
+    --volume $(pwd)/tests:/tex \
+    alexpovel/latex \
+    -c
+  ```
+
+  to run, if `latexmk` is the `ENTRYPOINT`, the equivalent of `latexmk -c`
+  ([cleaning auxiliary files](https://mg.readthedocs.io/latexmk.html#cleaning-up)).
+
+  To **overwrite** the `ENTRYPOINT`, e.g. because you want to run only `lualatex`,
+  use the `--entrypoint` option, e.g. `--entrypoint="lualatex"`.
 
 ## Approach
 
