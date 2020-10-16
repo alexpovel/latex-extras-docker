@@ -1,5 +1,7 @@
 # Docker with custom, almost-full TeXLive distributions & custom tools
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/alexpovel/latex)](https://hub.docker.com/r/alexpovel/latex)
+
 Serves a lot of needs surrounding LaTeX file generation and handling.
 For the rationale behind the installed Debian packages, see [below](#custom-tools).
 To see how to build the image, see [below](#building).
@@ -20,6 +22,10 @@ To use the image, you can use the [example](tests/minimal.tex) provided in this 
 - in Bash:
 
   ```bash
+  # WIP: This will create all files as `root:root` owner.
+  # Specifying `--user $(id -u):$(id -g)` crashes `luaotfload`.
+  # Regardless, this still works for CI/CD work; it also works
+  # locally, you just have to `chown`.
   docker run \
     --rm \
     --volume $(pwd)/tests:/tex \
