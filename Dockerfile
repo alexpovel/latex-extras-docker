@@ -12,6 +12,9 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         # wget for `install-tl` script to download TeXLive, and other downloads.
         wget \
+        # In a similar vein, `curl` is required by various tools, or is just very
+        # nice to have for various scripting tasks.
+        curl \
         # wget/install-tl requires capibility to check certificate validity.
         # Without this, executing `install-tl` fails with:
         #
