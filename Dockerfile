@@ -33,7 +33,11 @@ RUN apt-get update && \
         # Update Perl, otherwise: "Can't locate Pod/Usage.pm in @INC" in install-tl
         # script; Perl is already installed, but do not use `upgrade`, see
         # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
-        perl
+        perl \
+        # Usally, `latexmk` is THE tool to use to automate, in a `make`-like style,
+        # LaTeX (PDF) file generation. However, if that is not enough, the following
+        # will fill the gaps and cover all other use cases:
+        make
 
 
 FROM BASE as PREPARE
