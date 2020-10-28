@@ -15,8 +15,13 @@ if [[ $DOCKER_TAG == "latest" ]]
 then
     # Default OS:
     BASE_OS="debian"
-    # Just get latest base OS version:
-    OS_VERSION=${DOCKER_TAG}
+    # `debian:latest` will get latest *stable*, which has between 1.5 to 2 years old,
+    # well-tested software. While that is suitable for servers etc., this Docker image
+    # does not need highest stability. More recent features are more important (e.g. for
+    # pandoc). Debian's `testing` branch sounds cutting-edge but is roughly 6 months old
+    # software, so should be stable enough here.
+    # This image's main component, TeXLive, is largely unaffected by this anyway.
+    OS_VERSION="testing"
     # Installation script takes care of finding the appropriate version of TeXLive
     # for the 'latest' tag:
     TL_VERSION=${DOCKER_TAG}
