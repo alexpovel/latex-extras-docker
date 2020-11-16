@@ -70,7 +70,7 @@ case ${ACTION} in
             # which might change in TeXLive upstream, so do not hardcode here),
             # the second one expands to all binaries found in that directory.
             # Only link if directory exists, else we end up with a junk symlink.
-            EXPECTED_INSTALL_TEXDIR=${TEXLIVE_INSTALL_TEXDIR}/bin/*
+            EXPECTED_INSTALL_TEXDIR="${TEXLIVE_INSTALL_TEXDIR}/bin/*"
 
             # `ls` found to be more robust than `[ -d ... ]`.
             if ls ${EXPECTED_INSTALL_TEXDIR} 1>/dev/null 2>&1
