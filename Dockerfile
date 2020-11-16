@@ -1,6 +1,6 @@
 # ARGs before the first FROM are global and usable in all stages
-ARG BASE_OS
-ARG OS_VERSION
+ARG BASE_OS=debian
+ARG OS_VERSION=testing
 
 # Image with layers as used by all succeeding steps
 FROM ${BASE_OS}:${OS_VERSION} as BASE
@@ -62,7 +62,7 @@ FROM BASE as PREPARE
 # This also happens when the *value* contains 'TEX'.
 # `ARG`s are only set during Docker image build-time, so this warning should be void.
 
-ARG TL_VERSION
+ARG TL_VERSION=latest
 ARG TL_INSTALL_ARCHIVE="install-tl-unx.tar.gz"
 ARG EISVOGEL_ARCHIVE="Eisvogel.tar.gz"
 ARG INSTALL_TL_DIR="install-tl"
@@ -94,7 +94,7 @@ FROM BASE as MAIN
 ARG BUILD_DATE="n/a"
 ARG VCS_REF="n/a"
 
-ARG TL_VERSION
+ARG TL_VERSION=latest
 ARG TL_PROFILE="texlive.profile"
 
 # Label according to http://label-schema.org/rc1/ to have some metadata in the image.
@@ -140,6 +140,14 @@ RUN ./texlive.sh install ${TL_VERSION}
 # 0 and allow the build to continue.
 RUN luaotfload-tool --update || echo "luaotfload-tool not found, skipping."
 
+WORKDIR /tex/
+
+# Remove no longer needed installation workdir.
+# Cannot run this earlier because it would be recreated for any succeeding `RUN`
+# instructions.
+# Therefore, change `WORKDIR` first, then delete the old one.
+RUN rm --recursive ${INSTALL_DIR}
+
 # Layer with graphical and auxiliary tools
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
@@ -159,14 +167,6 @@ RUN apt-get update && \
     # into PDF
     librsvg2-bin \
     pandoc
-
-WORKDIR /tex/
-
-# Remove no longer needed installation workdir.
-# Cannot run this earlier because it would be recreated for any succeeding `RUN`
-# instructions.
-# Therefore, change `WORKDIR` first, then delete the old one.
-RUN rm --recursive ${INSTALL_DIR}
 
 # The default parameters to the entrypoint; overridden if any arguments are given to
 # `docker run`.
