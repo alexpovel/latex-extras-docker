@@ -200,7 +200,7 @@ Issues I ran into are:
   E: Some index files failed to download, they have been ignored, or old ones used instead.
   ```
 
-  As such, there needs to be a [dynamic way to update `/etc/apt/sources.list`](adjust_sources_list.sh)
+  As such, there needs to be a [dynamic way to update `/etc/apt/sources.list`](https://github.com/alexpovel/latex-extras-docker/blob/fa9452c236079a65563daff22767b2b637dd80c6/adjust_sources_list.sh)
   if the Debian version to be used in an archived one, see also
   [here](https://web.archive.org/web/20201007095943/https://www.prado.lt/using-old-debian-versions-in-your-sources-list).
 - `RUN wget` (or `curl` etc.) via `HTTPS` will fail for older releases, e.g. GitHub
