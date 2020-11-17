@@ -15,7 +15,7 @@ RUN apt-get update && \
         # In a similar vein, `curl` is required by various tools, or is just very
         # nice to have for various scripting tasks.
         curl \
-        # wget/install-tl requires capibility to check certificate validity.
+        # wget/install-tl requires capability to check certificate validity.
         # Without this, executing `install-tl` fails with:
         #
         # install-tl: TLPDB::from_file could not initialize from: https://<mirror>/pub/ctan/systems/texlive/tlnet/tlpkg/texlive.tlpdb
@@ -34,7 +34,7 @@ RUN apt-get update && \
         # script; Perl is already installed, but do not use `upgrade`, see
         # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
         perl \
-        # Usally, `latexmk` is THE tool to use to automate, in a `make`-like style,
+        # Usually, `latexmk` is THE tool to use to automate, in a `make`-like style,
         # LaTeX (PDF) file generation. However, if that is not enough, the following
         # will fill the gaps and cover all other use cases:
         make
@@ -53,7 +53,7 @@ FROM BASE as PREPARE
 #  The following environment variables contain the string "tex"
 #  (case-independent).  If you're doing anything but adding personal
 #  directories to the system paths, they may well cause trouble somewhere
-#  while running TeX.  If you encounter problems, try unsetting them.
+#  while running TeX. If you encounter problems, try unsetting them.
 #  Please ignore spurious matches unrelated to TeX.
 
 #     TEXPROFILE_FILE=texlive.profile
