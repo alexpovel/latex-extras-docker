@@ -3,8 +3,7 @@
 # Script to fetch `install-tl` script from different sources, depending on argument
 # given.
 
-# Error out of any of the variables used here are unbound, e.g. no CLI arg given.
-set -u
+set -ueo pipefail
 
 usage() {
     echo "Usage: $0 get|install latest|version (YYYY)"
