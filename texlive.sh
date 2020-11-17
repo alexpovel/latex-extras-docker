@@ -36,10 +36,10 @@ case ${ACTION} in
         if [[ ${VERSION} == "latest" ]]
         then
             # Get from default, current repository
-            wget ${REGULAR_URL}/${TL_INSTALL_ARCHIVE}
+            wget "${REGULAR_URL}/${TL_INSTALL_ARCHIVE}"
         else
             # Get from historic repository
-            wget ${HISTORIC_URL}/${TL_INSTALL_ARCHIVE}
+            wget "${HISTORIC_URL}/${TL_INSTALL_ARCHIVE}"
         fi
     ;;
     "install")
@@ -47,13 +47,13 @@ case ${ACTION} in
         then
             # Install using default, current repository
             perl install-tl \
-                --profile=${TL_PROFILE}
+                --profile="$TL_PROFILE"
         else
             # Install using historic repository (`install-tl` script and repository
             # versions need to match)
             perl install-tl \
-                --profile=${TL_PROFILE} \
-                --repository=${HISTORIC_URL}
+                --profile="$TL_PROFILE" \
+                --repository="$HISTORIC_URL"
         fi
 
         # For `command` usage, see:
@@ -73,7 +73,7 @@ case ${ACTION} in
             EXPECTED_INSTALL_TEXDIR="${TEXLIVE_INSTALL_TEXDIR}/bin/*"
 
             # `ls` found to be more robust than `[ -d ... ]`.
-            if ls ${EXPECTED_INSTALL_TEXDIR} 1>/dev/null 2>&1
+            if ls "$EXPECTED_INSTALL_TEXDIR" 1>/dev/null 2>&1
             then
                 SYMLINK_DESTINATION="/usr/local/bin"
 
@@ -89,7 +89,7 @@ case ${ACTION} in
                 echo "to a directory (${SYMLINK_DESTINATION}) found on PATH (${PATH})"
 
                 # Notice the wildcard:
-                ln --symbolic --verbose ${EXPECTED_INSTALL_TEXDIR}/* ${SYMLINK_DESTINATION}
+                ln --symbolic --verbose "$EXPECTED_INSTALL_TEXDIR"/* ${SYMLINK_DESTINATION}
 
                 if command -v tex &> /dev/null
                 then

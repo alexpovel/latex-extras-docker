@@ -9,7 +9,7 @@ set -u
 VCS_REF=$SOURCE_COMMIT
 BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%S%Z)
 
-cut_tag_field() { echo ${DOCKER_TAG} | cut --delimiter="-" --fields=${1}; }
+cut_tag_field() { echo "$DOCKER_TAG" | cut --delimiter="-" --fields="$1"; }
 
 if [[ $DOCKER_TAG == "latest" ]]
 then
@@ -43,9 +43,9 @@ else
 fi
 
 docker build \
-    --build-arg VCS_REF=${VCS_REF} \
-    --build-arg BUILD_DATE=${BUILD_DATE} \
-    --build-arg BASE_OS=${BASE_OS} \
-    --build-arg OS_VERSION=${OS_VERSION} \
-    --build-arg TL_VERSION=${TL_VERSION} \
-    --tag ${IMAGE_NAME} .
+    --build-arg VCS_REF="$VCS_REF" \
+    --build-arg BUILD_DATE="$BUILD_DATE" \
+    --build-arg BASE_OS="$BASE_OS" \
+    --build-arg OS_VERSION="$OS_VERSION" \
+    --build-arg TL_VERSION="$TL_VERSION" \
+    --tag "$IMAGE_NAME" .
