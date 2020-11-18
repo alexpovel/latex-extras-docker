@@ -94,7 +94,7 @@ FROM BASE as MAIN
 ARG BUILD_DATE="n/a"
 ARG VCS_REF="n/a"
 
-ARG TL_VERSION=latest
+ARG TL_VERSION="latest"
 ARG TL_PROFILE="texlive.profile"
 
 # Label according to http://label-schema.org/rc1/ to have some metadata in the image.
