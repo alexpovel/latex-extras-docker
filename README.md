@@ -1,10 +1,10 @@
-# Docker with custom, almost-full TeXLive distributions & custom tools
+# Docker image with custom, almost-full TeXLive distribution & various tools
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/alexpovel/latex)](https://hub.docker.com/r/alexpovel/latex)
 
 Serves a lot of needs surrounding LaTeX file generation and handling.
 For the rationale behind the installed Debian packages, see [below](#custom-tools).
-To see how to build the image, see [below](#building).
+To see how to build the image, also see [below](#building).
 
 ## Quick Intro
 
@@ -22,10 +22,6 @@ To use the image, you can use the [example](tests/minimal.tex) provided in this 
 - in Bash:
 
   ```bash
-  # WIP: This will create all files as `root:root` owner.
-  # Specifying `--user $(id -u):$(id -g)` crashes `luaotfload`.
-  # Regardless, this still works for CI/CD work; it also works
-  # locally, you just have to `chown`.
   docker run \
     --rm \
     --volume $(pwd)/tests:/tex \
@@ -62,7 +58,7 @@ The parts making up the command are:
   `lualatex`, `biber` and whatever else required for compilation as many times as
   needed for proper PDF output (so references like `??` in the PDF are resolved).
   It does this by detecting that auxiliary files no longer change (steady-state).
-  The tool is best configured using a config file (`.latexmkrc`).)
+  The tool is best configured using its config file, `.latexmkrc`.)
 
   Any options to the `ENTRYPOINT` executable are given at the end of the command, e.g.:
 
@@ -79,6 +75,8 @@ The parts making up the command are:
 
   To **overwrite** the `ENTRYPOINT`, e.g. because you want to run only `lualatex`,
   use the `--entrypoint` option, e.g. `--entrypoint="lualatex"`.
+  Similarly, you can work inside of the container directly, e.g. for debugging, using
+  `--entrypoint="bash"`.
 
 ## Approach
 
@@ -92,7 +90,8 @@ but TeXLive cannot install missing packages on-the-fly,
 [unlike MiKTeX](https://miktex.org/howto/miktex-console/).
 Therefore, images should come with all desirable packages in place; installing them after
 the fact in running containers using [`tlmgr`](https://www.tug.org/texlive/tlmgr.html)
-is the wrong approach.
+is the wrong approach (containers are only meant to be run; if they are incomplete,
+modify the *image*, ordinarily by modifying the `Dockerfile`).
 
 This approach has the following advantages:
 
@@ -102,7 +101,8 @@ This approach has the following advantages:
   This is often not relevant, but has bitten me several times while working with the
   latest packages.
 - The installation can be adjusted better.
-  For example, *multiple GBs* of space are saved by omitting unneeded PDF documentation files.
+  For example, *multiple GBs* of storage/image size are saved by omitting unneeded PDF
+  documentation files.
 - We can install arbitrary TeXLive versions, as long as they are the
   [current](https://tug.org/texlive/acquire-netinstall.html)
   or an
@@ -117,6 +117,23 @@ The `install-tl` tool is configured via a [*Profile* file](texlive.profile), see
 the [documentation](https://www.tug.org/texlive/doc/install-tl.html#PROFILES).
 This enables unattended, pre-configured installs, as required for a Docker installation.
 
+---
+
+The (official?) [`texlive/texlive` image](https://hub.docker.com/r/texlive/texlive) follows
+[the same approach](https://hub.docker.com/layers/texlive/texlive/latest/images/sha256-70fdbc1d9596c8eeb4a80c71a8eb3a5aeb63bed784112cbdb87f740e28de7a80?context=explore).
+However, there are a bunch of things this Dockerfile does differently that warrant not
+building `FROM` that image:
+
+- a user-editable, thus more easily configurable [profile](texlive.profile).
+  This is mainly concerning the picked package *collections*. Unchecking (putting a `0`)
+  unused ones saves around 500MB at the time of writing.
+- more elaborate support for [historic versions](#historic-builds)
+- an installation procedure incorporating a proper `USER`
+
+Things they do that do not happen here:
+
+- verify download integrity using `gpg`
+
 ### Historic Builds
 
 LaTeX is a slow world, and many documents/templates in circulation still rely on
@@ -124,6 +141,8 @@ outdated practices or packages.
 This can be a huge hassle.
 Maintaining an old LaTeX distribution next to a current one on the same host is
 not fun.
+This is complicated by the fact that (La)TeX seems to do things differently than pretty much
+everything else.
 For this, Docker is the perfect tool.
 
 This image can be built (`docker build`) with different build `ARG`s, and the build
@@ -131,7 +150,7 @@ process will figure out the proper way to handle installation.
 There is a [script](texlive.sh) to handle getting and installing TeXLive from the
 proper location ([current](https://www.tug.org/texlive/acquire-netinstall.html) or
 [archive](ftp://tug.org/historic/systems/texlive/)).
-Refer to the [Dockerfile](Dockerfile) for the required `ARG`s (all `ARG` without a default).
+Refer to the [Dockerfile](Dockerfile) for the available `ARG`s (all `ARG` have a default).
 These are handed to the build process via the
 [`--build-arg` option](https://docs.docker.com/engine/reference/commandline/build/#options).
 
@@ -337,12 +356,13 @@ For the currently available tags, see [here](https://hub.docker.com/repository/d
 
 ### Locally
 
-The Dockerfile can of course also be built locally, by specifying all requires `ARG`s:
+The Dockerfile can of course also be built locally.
+If you desire to use non-default `ARG`s, the build might look like:
 
 ```bash
-export TL_VERSION=<version>
-export BASE_OS=<Linux distro name>
-export OS_VERSION=<version corresponding to that name, e.g. '8' or 'buster' (Debian)>
+export TL_VERSION="<version>"
+export BASE_OS="<Linux distro name>"
+export OS_VERSION="<version corresponding to that name, e.g. '8' or 'buster' (Debian)>"
 
 docker build . \
   --build-arg TL_VERSION=${TL_VERSION} \
@@ -355,10 +375,17 @@ Essentially, you would want to emulate what the [build hook](hooks/build) does.
 
 This process can take a very long time, especially when downloading from the TeXLive/TUG
 archives.
-For developing/debugging, it is advisable to download the archive files once
-(e.g. for TexLive 2014, you would want this directory: <ftp://tug.org/historic/systems/texlive/2014/tlnet-final/>)
-and then working with the `--repository=/some/local/path` option of `install-tl`,
-after copying the archive directory into the image at build time
+For developing/debugging, it is advisable to download the archive files once.
+E.g. for TexLive 2014, you would want this directory: <ftp://tug.org/historic/systems/texlive/2014/tlnet-final/>.
+Download in one go using:
+
+```bash
+wget --recursive --no-clobber ftp://tug.org/historic/systems/texlive/2014/tlnet-final
+```
+
+The `--no-clobber` option allows you to restart the download at will.
+Then, work with the `--repository=/some/local/path` option of `install-tl`,
+after [copying the archive directory into the image at build time](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#understand-build-context)
 (see also [here](https://tex.stackexchange.com/a/374651/120853)).
-This approach circumvents [unstable connections](https://tex.stackexchange.com/q/370686/120853)
-and minimizes unnecessary load put onto TUG servers.
+Having a local copy circumvents [unstable connections](https://tex.stackexchange.com/q/370686/120853)
+and minimizes unnecessary load onto TUG servers.
