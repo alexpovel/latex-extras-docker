@@ -122,7 +122,7 @@ LABEL \
 ARG USER="tex"
 RUN useradd --create-home ${USER}
 
-ARG INSTALL_DIR="/install/"
+ARG INSTALL_DIR="/install"
 WORKDIR ${INSTALL_DIR}
 
 # Copy custom file containing TeXLive installation instructions
