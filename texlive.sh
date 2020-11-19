@@ -9,6 +9,17 @@ usage() {
     echo "Usage: $0 get|install latest|version (YYYY)"
 }
 
+check_path() {
+    # For `command` usage, see:
+    # https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#Bash-Builtins.
+    # The following test assumes the most basic program, `tex`, is present.
+    if command -v tex &> /dev/null
+    then
+        echo "PATH and installation seem OK."
+        exit 0
+    fi
+}
+
 if [[ $# != 2 ]]; then
     echoerr "Unsuitable number of arguments given."
     usage
@@ -55,55 +66,53 @@ case ${ACTION} in
                 --repository="$HISTORIC_URL"
         fi
 
-        # For `command` usage, see:
-        # https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#Bash-Builtins.
-        # The following test assumes the most basic program, `tex`, is present.
-        if command -v tex &> /dev/null
+        # If automatic `install-tl` process has already adjusted PATH, we are happy.
+        check_path
+
+        # `\d` class doesn't exist for basic `grep`, use `0-9`, which is much more
+        # portable. Finding the initial dir is very fast, but looking through everything
+        # else afterwards might take a while. Therefore, print and quit after first result.
+        # Path example: `/usr/local/texlive/2018/bin/x86_64-linux`
+        TEXLIVE_BIN_DIR=$(find / -type d -regextype grep -regex '.*/texlive/[0-9]\{4\}/bin/.*' -print -quit)
+
+        # -z test: string zero length?
+        if [ -z "$TEXLIVE_BIN_DIR" ]
         then
-            # If automatic `install-tl` process has already adjusted PATH, we are happy.
-            echo "PATH and installation seem OK."
-        else
-            # Try and make installation available on path manually.
-            #
-            # The first wildcard expands to the architecture (should be 'x86_64-linux',
-            # which might change in TeXLive upstream, so do not hardcode here),
-            # the second one expands to all binaries found in that directory.
-            # Only link if directory exists, else we end up with a junk symlink.
-            EXPECTED_INSTALL_TEXDIR="${TEXLIVE_INSTALL_TEXDIR}/bin/*"
-
-            # `ls` found to be more robust than `[ -d ... ]`.
-            if ls "$EXPECTED_INSTALL_TEXDIR" 1>/dev/null 2>&1
-            then
-                SYMLINK_DESTINATION="/usr/local/bin"
-
-                # "String contains", see: https://stackoverflow.com/a/229606/11477374
-                if [[ ! ${PATH} == *${SYMLINK_DESTINATION}* ]]
-                then
-                    # Should never get here, but make sure.
-                    echoerr "Symlink destination ${SYMLINK_DESTINATION} not in PATH (${PATH}), exiting."
-                    exit 1
-                fi
-
-                echo "Symlinking TeXLive binaries in ${EXPECTED_INSTALL_TEXDIR}"
-                echo "to a directory (${SYMLINK_DESTINATION}) found on PATH (${PATH})"
-
-                # Notice the wildcard:
-                ln --symbolic --verbose "$EXPECTED_INSTALL_TEXDIR"/* ${SYMLINK_DESTINATION}
-
-                if command -v tex &> /dev/null
-                then
-                    echo "PATH and installation seem OK."
-                else
-                    echoerr "Manual symlinking failed and TeXLive did not modify PATH automatically."
-                    echoerr "Exiting."
-                    exit 1
-                fi
-            else
-                echoerr "Expected TeXLive installation dir not found and TeXLive installation did not modify PATH automatically."
-                echoerr "Exiting."
-                exit 1
-            fi
+            echoerr "Expected TeXLive installation dir not found and TeXLive installation did not modify PATH automatically."
+            echoerr "Exiting."
+            exit 1
         fi
+
+        echo "Found TeXLive binaries at $TEXLIVE_BIN_DIR"
+        echo "Trying native TeXLive symlinking using tlmgr..."
+
+        if "$TEXLIVE_BIN_DIR"/tlmgr path add
+        then
+            check_path
+        else
+            echo "Symlinking using tlmgr did not succeed, trying manual linking..."
+        fi
+
+        SYMLINK_DESTINATION="/usr/local/bin"
+
+        # "String contains", see: https://stackoverflow.com/a/229606/11477374
+        if [[ ! ${PATH} == *${SYMLINK_DESTINATION}* ]]
+        then
+            # Should never get here, but make sure.
+            echoerr "Symlink destination ${SYMLINK_DESTINATION} not in PATH (${PATH}), exiting."
+            exit 1
+        fi
+
+        echo "Symlinking TeXLive binaries in ${TEXLIVE_BIN_DIR}"
+        echo "to a directory (${SYMLINK_DESTINATION}) found on PATH (${PATH})"
+
+        # Notice the wildcard:
+        ln --symbolic --verbose "$TEXLIVE_BIN_DIR"/* "$SYMLINK_DESTINATION"
+
+        check_path
+
+        echoerr "All attempts failed, exiting."
+        exit 1
     ;;
     *)
         echoerr "Input not understood."
