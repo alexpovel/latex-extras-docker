@@ -143,11 +143,7 @@ ARG TEXLIVE_INSTALL_TEXMFVAR="/home/${USER}/.texlive/texmf-var"
 ARG TEXLIVE_INSTALL_TEXMFHOME="/home/${USER}/texmf"
 
 # (Large) LaTeX layer
-RUN ./texlive.sh install ${TL_VERSION} && \
-    # Even though we just installed, check for updates. Possibly, the mirror we installed
-    # from does not have the latest versions. `tlmgr` might look into other mirrors.
-    # In the worst case (nothing found), this costs us 2 seconds of build time.
-    tlmgr update --self --all
+RUN ./texlive.sh install ${TL_VERSION}
 
 # Remove no longer needed installation workdir.
 # Cannot run this earlier because it would be recreated for any succeeding `RUN`
