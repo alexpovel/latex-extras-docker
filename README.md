@@ -10,21 +10,21 @@ To see how to build the image, also see [below](#building).
 
 To use the image, you can use the [example](tests/minimal.tex) provided in this repository:
 
-- in PowerShell:
-
-  ```powershell
-  docker run `
-    --rm `
-    --volume ${PWD}/tests:/tex `
-    alexpovel/latex
-  ```
-
-- in Bash:
+- Bash:
 
   ```bash
   docker run \
     --rm \
     --volume $(pwd)/tests:/tex \
+    alexpovel/latex
+  ```
+
+- PowerShell:
+
+  ```powershell
+  docker run `
+    --rm `
+    --volume ${PWD}/tests:/tex `
     alexpovel/latex
   ```
 
