@@ -126,8 +126,12 @@ ARG INSTALL_DIR="/install"
 WORKDIR ${INSTALL_DIR}
 
 # Copy custom file containing TeXLive installation instructions
-COPY ${TL_PROFILE} .
+COPY config/${TL_PROFILE} .
 COPY --from=PREPARE /install-tl/ /texlive.sh ./
+
+# Global wget config file, see the comments in that file for more info and the rationale.
+# Location of that file depends on system, e.g.: https://askubuntu.com/a/368050
+COPY config/.wgetrc /etc/wgetrc
 
 # Change that file's suffix to .latex, move to where pandoc looks for templates, see
 # https://pandoc.org/MANUAL.html#option--data-dir

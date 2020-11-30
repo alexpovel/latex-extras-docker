@@ -113,7 +113,7 @@ This approach has the following advantages:
   This way, we can choose a somewhat recent Debian version and simply install an old
   TeXLive into it.
 
-The `install-tl` tool is configured via a [*Profile* file](texlive.profile), see also
+The `install-tl` tool is configured via a [*Profile* file](config/texlive.profile), see also
 the [documentation](https://www.tug.org/texlive/doc/install-tl.html#PROFILES).
 This enables unattended, pre-configured installs, as required for a Docker installation.
 
@@ -124,7 +124,7 @@ The (official?) [`texlive/texlive` image](https://hub.docker.com/r/texlive/texli
 However, there are a bunch of things this Dockerfile does differently that warrant not
 building `FROM` that image:
 
-- a user-editable, thus more easily configurable [profile](texlive.profile).
+- a user-editable, thus more easily configurable [profile](config/texlive.profile).
   This is mainly concerning the picked package *collections*. Unchecking (putting a `0`)
   unused ones saves around 500MB at the time of writing.
 - more elaborate support for [historic versions](#historic-builds)
