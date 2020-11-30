@@ -40,7 +40,7 @@ RUN apt-get update && \
         make
 
 
-FROM BASE as PREPARE
+FROM BASE as DOWNLOADS
 
 # Cannot share ARGs over multiple stages, see also:
 # https://github.com/moby/moby/issues/37345.
@@ -127,7 +127,7 @@ WORKDIR ${INSTALL_DIR}
 
 # Copy custom file containing TeXLive installation instructions
 COPY config/${TL_PROFILE} .
-COPY --from=PREPARE /install-tl/ /texlive.sh ./
+COPY --from=DOWNLOADS /install-tl/ /texlive.sh ./
 
 # Global wget config file, see the comments in that file for more info and the rationale.
 # Location of that file depends on system, e.g.: https://askubuntu.com/a/368050
@@ -135,7 +135,7 @@ COPY config/.wgetrc /etc/wgetrc
 
 # Change that file's suffix to .latex, move to where pandoc looks for templates, see
 # https://pandoc.org/MANUAL.html#option--data-dir
-COPY --from=PREPARE /eisvogel.tex /usr/share/pandoc/data/templates/eisvogel.latex
+COPY --from=DOWNLOADS /eisvogel.tex /usr/share/pandoc/data/templates/eisvogel.latex
 
 # See: https://www.tug.org/texlive/doc/install-tl.html#ENVIRONMENT-VARIABLES,
 # https://tex.stackexchange.com/a/470341/120853.
