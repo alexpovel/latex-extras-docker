@@ -46,16 +46,19 @@ case ${ACTION} in
         if [[ ${VERSION} == "latest" ]]
         then
             # Get from default, current repository
-            wget "${REGULAR_URL}/${TL_INSTALL_ARCHIVE}"
+            GET_URL="${REGULAR_URL}/${TL_INSTALL_ARCHIVE}"
         else
             # Get from historic repository
-            wget "${HISTORIC_URL}/${TL_INSTALL_ARCHIVE}"
+            GET_URL="${HISTORIC_URL}/${TL_INSTALL_ARCHIVE}"
         fi
+        wget "$GET_URL"
     ;;
     "install")
         if [[ ${VERSION} == "latest" ]]
         then
-            # Install using default, current repository
+            # Install using default, current repository.
+            # Install process/script documentation is here:
+            # https://www.tug.org/texlive/doc/texlive-en/texlive-en.html
             perl install-tl \
                 --profile="$TL_PROFILE"
         else
