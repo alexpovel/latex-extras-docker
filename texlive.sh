@@ -3,7 +3,7 @@
 # Script to fetch `install-tl` script from different sources, depending on argument
 # given.
 
-set -ueo pipefail
+set -xueo pipefail
 
 usage() {
     echo "Usage: $0 get_installer|install latest|version (YYYY)"
@@ -18,7 +18,7 @@ check_path() {
         echo "PATH and installation seem OK, exiting with success."
         exit 0
     else
-        echo "PATH or installation unhealthy, further action required..."
+        echoerr "PATH or installation unhealthy, further action required..."
     fi
 }
 
