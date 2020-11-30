@@ -92,12 +92,12 @@ case ${ACTION} in
         echo "Found TeXLive binaries at $TEXLIVE_BIN_DIR"
         echo "Trying native TeXLive symlinking using tlmgr..."
 
-        if "$TEXLIVE_BIN_DIR"/tlmgr path add
-        then
-            check_path
-        else
-            echo "Symlinking using tlmgr did not succeed, trying manual linking..."
-        fi
+        # To my amazement, `tlmgr path add` can fail but still link successfully. So
+        # check if PATH is OK despite that command failing.
+        "$TEXLIVE_BIN_DIR"/tlmgr path add || \
+            echoerr "Command borked, checking if it worked regardless..."
+        check_path
+        echoerr "Symlinking using tlmgr did not succeed, trying manual linking..."
 
         SYMLINK_DESTINATION="/usr/local/bin"
 
@@ -112,8 +112,12 @@ case ${ACTION} in
         echo "Symlinking TeXLive binaries in ${TEXLIVE_BIN_DIR}"
         echo "to a directory (${SYMLINK_DESTINATION}) found on PATH (${PATH})"
 
-        # Notice the wildcard:
-        ln --symbolic --verbose "$TEXLIVE_BIN_DIR"/* "$SYMLINK_DESTINATION"
+        # Notice the slash and wildcard.
+        ln \
+            --symbolic \
+            --verbose \
+            --target-directory="$SYMLINK_DESTINATION" \
+            "$TEXLIVE_BIN_DIR"/*
 
         check_path
 
