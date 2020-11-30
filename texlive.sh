@@ -6,7 +6,7 @@
 set -ueo pipefail
 
 usage() {
-    echo "Usage: $0 get|install latest|version (YYYY)"
+    echo "Usage: $0 get_installer|install latest|version (YYYY)"
 }
 
 check_path() {
@@ -44,7 +44,7 @@ HISTORIC_URL="ftp://tug.org/historic/systems/texlive/${VERSION}/tlnet-final"
 REGULAR_URL="http://mirror.ctan.org/systems/texlive/tlnet"
 
 case ${ACTION} in
-    "get")
+    "get_installer")
         if [[ ${VERSION} == "latest" ]]
         then
             # Get from default, current repository

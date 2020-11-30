@@ -71,7 +71,7 @@ COPY texlive.sh .
 
 RUN \
     # Get appropriate installer for the TeXLive version to be installed:
-    ./texlive.sh get ${TL_VERSION} && \
+    ./texlive.sh get_installer ${TL_VERSION} && \
     # Get Eisvogel LaTeX template for pandoc,
     # see also #175 in that repo.
     wget https://github.com/Wandmalfarbe/pandoc-latex-template/releases/latest/download/${EISVOGEL_ARCHIVE}
