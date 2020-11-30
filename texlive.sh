@@ -3,7 +3,7 @@
 # Script to fetch `install-tl` script from different sources, depending on argument
 # given.
 
-set -xueo pipefail
+set -ueo pipefail
 
 usage() {
     echo "Usage: $0 get_installer|install latest|version (YYYY)"
