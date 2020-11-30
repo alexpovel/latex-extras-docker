@@ -83,8 +83,8 @@ collection-wintools 0
 # -------------------------------------------------------------------------------
 # Options for TeXLive installation
 # -------------------------------------------------------------------------------
-# Create symlinks in standard $PATH directories (TeXLive installs into `TEXDIR`,
-# see its path above). Instead of manipulating $PATH, symlinks to `TEXDIR` are
+# Create symlinks in standard PATH directories (TeXLive installs into `TEXDIR`,
+# see its path above). Instead of manipulating PATH, symlinks to `TEXDIR` are
 # created, per default into `/usr/local/bin`.
 # This setting is required to find tools!
 # WARNING: This seems to only have been introduced in TeXLive 2017, see:
