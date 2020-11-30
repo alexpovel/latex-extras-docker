@@ -11,18 +11,32 @@ selected_scheme scheme-custom
 
 # -------------------------------------------------------------------------------
 # The below directories are the installation destinations.
-# For scripting/convenience, they are set using environment variables in the
-# Dockerfile, NOT here.
+# An alternative to using the setting here is to set environment variables like
+# `TEXLIVE_INSTALL_TEXMFHOME` directly (e.g. in the Dockerfile), but as of late,
+# `install-tl` claims to ignore environment variables when installing from a profile
+# file ("Environment variables are ignored"):
+# https://web.archive.org/web/20201122233159/https://www.tug.org/texlive/doc/install-tl.html#OPTIONS
+# So with this profile file guaranteed to work and parallel environment variables
+# *maybe* breaking in the future, use this profile file for everything.
+# Replace the below environment variables with appropriate values (this is automated
+# in the Dockerfile using `envsubst`).
 # -------------------------------------------------------------------------------
+
+# See: https://www.tug.org/texlive/doc/install-tl.html#ENVIRONMENT-VARIABLES,
+# https://tex.stackexchange.com/a/470341/120853.
+# IMPORTANT: Put these into the actual designated container's user's home for full
+# write access. Otherwise, we run into all sorts of annoying errors, like
+# https://tex.stackexchange.com/q/571021/120853.
+# The user we run this as is specified in the Dockerfile and inserted into here.
+TEXMFHOME /home/${USER}/texmf
+TEXMFVAR /home/${USER}/.texlive/texmf-var
+TEXMFCONFIG /home/${USER}/.texlive/texmf-config
+
+# Not required, left at default:
 # TEXDIR /usr/local/texlive/<version>
 # TEXMFSYSCONFIG /usr/local/texlive/<version>/texmf-config
 # TEXMFSYSVAR /usr/local/texlive/<version>/texmf-var
-#
-# TEXMFHOME ~/texmf
 # TEXMFLOCAL /usr/local/texlive/texmf-local
-#
-# TEXMFVAR ~/.texlive<version>/texmf-var
-# TEXMFCONFIG ~/.texlive<version>/texmf-config
 #
 # -------------------------------------------------------------------------------
 # Collections of packages; for their contents, see

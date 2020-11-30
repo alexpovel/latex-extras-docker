@@ -37,7 +37,10 @@ RUN apt-get update && \
         # Usually, `latexmk` is THE tool to use to automate, in a `make`-like style,
         # LaTeX (PDF) file generation. However, if that is not enough, the following
         # will fill the gaps and cover all other use cases:
-        make
+        make \
+        # Get `envsubst` to replace environment variables in files with their actual
+        # values.
+        gettext-base
 
 
 FROM BASE as DOWNLOADS
@@ -137,14 +140,13 @@ COPY config/.wgetrc /etc/wgetrc
 # https://pandoc.org/MANUAL.html#option--data-dir
 COPY --from=DOWNLOADS /eisvogel.tex /usr/share/pandoc/data/templates/eisvogel.latex
 
-# See: https://www.tug.org/texlive/doc/install-tl.html#ENVIRONMENT-VARIABLES,
-# https://tex.stackexchange.com/a/470341/120853.
-# IMPORTANT: Put these into the actual designated container's user's home for full
-# write access. Otherwise, we run into all sorts of annoying errors, like
-# https://tex.stackexchange.com/q/571021/120853
-ARG TEXLIVE_INSTALL_TEXMFCONFIG="/home/${USER}/.texlive/texmf-config"
-ARG TEXLIVE_INSTALL_TEXMFVAR="/home/${USER}/.texlive/texmf-var"
-ARG TEXLIVE_INSTALL_TEXMFHOME="/home/${USER}/texmf"
+# "In-place" `envsubst` run is a bit more involved, see also:
+# https://stackoverflow.com/q/35078753/11477374.
+RUN echo "Using profile file (indent purely visual):" && \
+    tmpfile=$(mktemp) && \
+    cp ${TL_PROFILE} tmpfile && \
+    cat ${TL_PROFILE} | envsubst | tee tmpfile | sed "s/^/\t/" && \
+    mv tmpfile ${TL_PROFILE}
 
 # (Large) LaTeX layer
 RUN ./texlive.sh install ${TL_VERSION}
