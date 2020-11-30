@@ -10,13 +10,15 @@ usage() {
 }
 
 check_path() {
-    # For `command` usage, see:
-    # https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html#Bash-Builtins.
-    # The following test assumes the most basic program, `tex`, is present.
-    if command -v tex &> /dev/null
+    # The following test assumes the most basic program, `tex`, is present, see also
+    # https://www.tug.org/texlive/doc/texlive-en/texlive-en.html#x1-380003.5
+    echo "Checking PATH and installation..."
+    if tex --version
     then
-        echo "PATH and installation seem OK."
+        echo "PATH and installation seem OK, exiting with success."
         exit 0
+    else
+        echo "PATH or installation unhealthy, further action required..."
     fi
 }
 
@@ -71,6 +73,7 @@ case ${ACTION} in
 
         # If automatic `install-tl` process has already adjusted PATH, we are happy.
         check_path
+        echo "install-tl procedure did not adjust PATH automatically, trying other options..."
 
         # `\d` class doesn't exist for basic `grep`, use `0-9`, which is much more
         # portable. Finding the initial dir is very fast, but looking through everything
