@@ -87,7 +87,7 @@ RUN \
     # which is of course unpredictable.
     tar --extract --file=${TL_INSTALL_ARCHIVE} --directory=${INSTALL_TL_DIR} --strip-components 1 && \
     \
-    # Prepare Eisvogel pandoc template (yields `eisvogel.tex` among other things):
+    # Prepare Eisvogel pandoc template (yields `eisvogel.latex` among other things):
     tar --extract --file=${EISVOGEL_ARCHIVE}
 
 
@@ -138,7 +138,7 @@ COPY config/.wgetrc /etc/wgetrc
 
 # Change that file's suffix to .latex, move to where pandoc looks for templates, see
 # https://pandoc.org/MANUAL.html#option--data-dir
-COPY --from=DOWNLOADS /eisvogel.tex /usr/share/pandoc/data/templates/eisvogel.latex
+COPY --from=DOWNLOADS /eisvogel.latex /usr/share/pandoc/data/templates/
 
 # "In-place" `envsubst` run is a bit more involved, see also:
 # https://stackoverflow.com/q/35078753/11477374.
