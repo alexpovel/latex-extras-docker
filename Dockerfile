@@ -40,7 +40,13 @@ RUN apt-get update && \
         make \
         # Get `envsubst` to replace environment variables in files with their actual
         # values.
-        gettext-base
+        gettext-base \
+        # Using the LaTeX package `minted` for syntax highlighting of source code
+        # snippets. It's much more powerful than the alternative `listings` (which is
+        # pure TeX: no outside dependencies but limited functionality) but requires
+        # Python's `pygments` package:
+        python3 \
+        python3-pygments
 
 
 FROM BASE as DOWNLOADS
