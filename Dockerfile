@@ -148,9 +148,9 @@ COPY --from=DOWNLOADS /eisvogel.latex /usr/share/pandoc/data/templates/
 
 # "In-place" `envsubst` run is a bit more involved, see also:
 # https://stackoverflow.com/q/35078753/11477374.
-RUN echo "Using profile file (indent purely visual):" && \
-    tmpfile=$(mktemp) && \
+RUN tmpfile=$(mktemp) && \
     cp ${TL_PROFILE} tmpfile && \
+    echo "Using profile file (indent purely visual):" && \
     cat ${TL_PROFILE} | envsubst | tee tmpfile | sed "s/^/\t/" && \
     mv tmpfile ${TL_PROFILE}
 
