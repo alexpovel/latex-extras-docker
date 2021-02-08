@@ -50,6 +50,22 @@ RUN apt-get update && \
         # Required to embed git metadata into PDF from within Docker container:
         git
 
+# The `minted` LaTeX package provides syntax highlighting using the Python `pygmentize`
+# package. That package also installs a callable script, which `minted` uses, see
+# https://tex.stackexchange.com/a/281152/120853.
+# Therefore, `minted` primarily works by invoking `pygmentize` (or whatever it was
+# overridden by using `\MintedPygmentize`). However, it requires `python` for other
+# jobs, e.g. to remove leading whitespace for the `autogobble` function, see the
+# "\minted@autogobble Remove common leading whitespace." line in the docs.
+# It is invoked with `python -c`, but Debian only has `python3`. Therefore, alias
+# `python` to invoke `python3`. Use `update-alternatives` because it's cooler than
+# symbolic linking, and made for this purpose.
+# If `python` is not available but `pygmentize` is, stuff like `autogobble` and
+# `\inputminted`won't work but syntax highlighting will.
+# See also https://stackoverflow.com/a/55351449/11477374
+# Last argument is `priority`, whose value shouldn't matter since there's nothing else.
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
 
 FROM BASE as DOWNLOADS
 
