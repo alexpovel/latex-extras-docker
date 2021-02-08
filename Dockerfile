@@ -46,7 +46,9 @@ RUN apt-get update && \
         # pure TeX: no outside dependencies but limited functionality) but requires
         # Python's `pygments` package:
         python3 \
-        python3-pygments
+        python3-pygments \
+        # Required to embed git metadata into PDF from within Docker container:
+        git
 
 
 FROM BASE as DOWNLOADS
