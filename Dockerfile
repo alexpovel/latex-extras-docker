@@ -34,6 +34,26 @@ RUN apt-get update && \
         # script; Perl is already installed, but do not use `upgrade`, see
         # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
         perl \
+        # Install `latexindent` Perl dependencies.
+        # Found these using this method: https://unix.stackexchange.com/a/506964/374985
+        # List of `latexindent` dependencies is here:
+        # https://latexindentpl.readthedocs.io/en/latest/appendices.html#linux,
+        # see also the helper script at
+        # https://github.com/cmhughes/latexindent.pl/blob/master/helper-scripts/latexindent-module-installer.pl
+        #
+        # Installing via Debian system packages because installing the modules via
+        # `cpanm` requires `gcc` and I wanted to avoid installing that (~200MB).
+        #
+        # YAML::Tiny:
+        libyaml-tiny-perl \
+        # File::HomeDir:
+        libfile-homedir-perl \
+        # Unicode:GCString:
+        libunicode-linebreak-perl \
+        # Log::Log4perl:
+        liblog-log4perl-perl \
+        # Log::Dispatch:
+        liblog-dispatch-perl \
         # Usually, `latexmk` is THE tool to use to automate, in a `make`-like style,
         # LaTeX (PDF) file generation. However, if that is not enough, the following
         # will fill the gaps and cover all other use cases:
