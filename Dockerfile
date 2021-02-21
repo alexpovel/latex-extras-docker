@@ -180,9 +180,8 @@ COPY --from=DOWNLOADS /install-tl/ /texlive.sh ./
 # Location of that file depends on system, e.g.: https://askubuntu.com/a/368050
 COPY config/.wgetrc /etc/wgetrc
 
-# Change that file's suffix to .latex, move to where pandoc looks for templates, see
-# https://pandoc.org/MANUAL.html#option--data-dir
-COPY --from=DOWNLOADS /eisvogel.latex /usr/share/pandoc/data/templates/
+# Move to where pandoc looks for templates, see https://pandoc.org/MANUAL.html#option--data-dir
+COPY --from=DOWNLOADS /eisvogel.latex /home/${USER}/.pandoc/templates/
 
 # "In-place" `envsubst` run is a bit more involved, see also:
 # https://stackoverflow.com/q/35078753/11477374.
