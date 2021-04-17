@@ -106,12 +106,19 @@ This approach has the following advantages:
 - We can install arbitrary TeXLive versions, as long as they are the
   [current](https://tug.org/texlive/acquire-netinstall.html)
   or an
-  [archived](ftp://tug.org/historic/systems/texlive/)
+  archived (ftp://tug.org/historic/systems/texlive/)
   version.
   Otherwise, to obtain [older or even obsolete TeXLive installations](#historic-builds),
   one would have to also obtain a corresponding Debian version.
   This way, we can choose a somewhat recent Debian version and simply install an old
   TeXLive into it.
+  
+  Eligible archive versions are those year directories (`2019`, `2020`, ...) present
+  at the above FTP link that have a `tlnet-final` subdirectory.
+  This is (speculating here) a frozen, aka final, version, put online the day the *next*
+  major release goes live.
+  For example, version `2021` released on 2021-04-01 and `2020` received its `tlnet-final`
+  subdirectory that same day.
 
 The `install-tl` tool is configured via a [*Profile* file](config/texlive.profile), see also
 the [documentation](https://www.tug.org/texlive/doc/install-tl.html#PROFILES).
