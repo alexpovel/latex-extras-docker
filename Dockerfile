@@ -3,7 +3,7 @@ ARG BASE_OS=debian
 ARG OS_VERSION=testing
 
 # Image with layers as used by all succeeding steps
-FROM ${BASE_OS}:${OS_VERSION} as BASE
+FROM ${BASE_OS}:${OS_VERSION} as base
 
 # Use `apt-get` over just `apt`, see https://askubuntu.com/a/990838/978477.
 # Also run `apt-get update` on every `RUN`, see:
@@ -87,7 +87,7 @@ RUN apt-get update && \
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 
-FROM BASE as DOWNLOADS
+FROM base as downloads
 
 # Cannot share ARGs over multiple stages, see also:
 # https://github.com/moby/moby/issues/37345.
@@ -135,7 +135,7 @@ RUN \
     tar --extract --file=${EISVOGEL_ARCHIVE}
 
 
-FROM BASE as MAIN
+FROM base as main
 
 # Metadata
 ARG BUILD_DATE="n/a"
@@ -174,14 +174,14 @@ WORKDIR ${INSTALL_DIR}
 
 # Copy custom file containing TeXLive installation instructions
 COPY config/${TL_PROFILE} .
-COPY --from=DOWNLOADS /install-tl/ /texlive.sh ./
+COPY --from=downloads /install-tl/ /texlive.sh ./
 
 # Global wget config file, see the comments in that file for more info and the rationale.
 # Location of that file depends on system, e.g.: https://askubuntu.com/a/368050
 COPY config/.wgetrc /etc/wgetrc
 
 # Move to where pandoc looks for templates, see https://pandoc.org/MANUAL.html#option--data-dir
-COPY --from=DOWNLOADS /eisvogel.latex /home/${USER}/.pandoc/templates/
+COPY --from=downloads /eisvogel.latex /home/${USER}/.pandoc/templates/
 
 # "In-place" `envsubst` run is a bit more involved, see also:
 # https://stackoverflow.com/q/35078753/11477374.
