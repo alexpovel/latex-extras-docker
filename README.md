@@ -112,7 +112,7 @@ This approach has the following advantages:
   one would have to also obtain a corresponding Debian version.
   This way, we can choose a somewhat recent Debian version and simply install an old
   TeXLive into it.
-  
+
   Eligible archive versions are those year directories (`2019`, `2020`, ...) present
   at the above FTP link that have a `tlnet-final` subdirectory.
   This is (speculating here) a frozen, aka final, version, put online the day the *next*
