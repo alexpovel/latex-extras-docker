@@ -106,7 +106,7 @@ This approach has the following advantages:
 - We can install arbitrary TeXLive versions, as long as they are the
   [current](https://tug.org/texlive/acquire-netinstall.html)
   or an
-  archived (ftp://tug.org/historic/systems/texlive/)
+  archived (<ftp://tug.org/historic/systems/texlive/>)
   version.
   Otherwise, to obtain [older or even obsolete TeXLive installations](#historic-builds),
   one would have to also obtain a corresponding Debian version.
