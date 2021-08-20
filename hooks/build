@@ -1,17 +1,46 @@
 #!/bin/bash
 
+# Usage: `./this-script <image name>`
+#
+# The image name should be of the form 'namespace:tag', e.g.
+# 'yourname/yourproject:latest', see also https://docs.docker.com/docker-hub/builds/advanced/.
+#
+# If $IMAGE_NAME is defined as an environment variable, it takes precedent and the
+# command line argument image name will be ignored.
+# If neither is given, this script fails.
+
+# In 2021, Docker retired its free automated builds. They now require a Pro plan.
+# (We can thank abusive miners for that).
+# To cope, and to not have to pay, these images are now built locally and pushed
+# manually. Hence, this script now works for both local use as well as DockerHub use
+# (should a Pro plan be available).
+
 set -u
 
 # For more info, see:
 # https://docs.docker.com/docker-hub/builds/advanced/
 # https://web.archive.org/web/20201002130055/https://dev.to/samuelea/automate-your-builds-on-docker-hub-by-writing-a-build-hook-script-13fp
 
-VCS_REF=$SOURCE_COMMIT
 BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%S%Z)
 
 cut_tag_field() { echo "$DOCKER_TAG" | cut --delimiter="-" --fields="$1"; }
 
-if [[ $DOCKER_TAG == "latest" ]]
+# Assign some (dynamic) default values if variables undefined.
+# This is compatible with the DockerHub infrastructure where these are defined
+# (see https://docs.docker.com/docker-hub/builds/advanced/) but also allows easy
+# local execution.
+: "${SOURCE_COMMIT:=$(git rev-parse HEAD)}" # https://stackoverflow.com/a/28085062
+: "${DOCKER_TAG:=latest}" # https://stackoverflow.com/a/28085062
+
+# This will fail if compiling locally where this env var is (probably) not defined,
+# and no command line argument is given:
+: "${IMAGE_NAME:=$1}" # https://stackoverflow.com/a/28085062
+
+echo "Using Docker tag '$DOCKER_TAG'."
+echo "Version control reference is '$SOURCE_COMMIT'."
+echo "Building with image name '$IMAGE_NAME'."
+
+if [[ "$DOCKER_TAG" == "latest" ]]
 then
     # Default OS:
     BASE_OS="debian"
@@ -24,7 +53,7 @@ then
     OS_VERSION="testing"
     # Installation script takes care of finding the appropriate version of TeXLive
     # for the 'latest' tag:
-    TL_VERSION=${DOCKER_TAG}
+    TL_VERSION="$DOCKER_TAG"
 else
     # Otherwise, take versions as manually specified in build process.
     #
@@ -43,9 +72,10 @@ else
 fi
 
 docker build \
-    --build-arg VCS_REF="$VCS_REF" \
+    --build-arg VCS_REF="$SOURCE_COMMIT" \
     --build-arg BUILD_DATE="$BUILD_DATE" \
     --build-arg BASE_OS="$BASE_OS" \
     --build-arg OS_VERSION="$OS_VERSION" \
     --build-arg TL_VERSION="$TL_VERSION" \
-    --tag "$IMAGE_NAME" .
+    --tag "$IMAGE_NAME" \
+    .
